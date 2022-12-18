@@ -4,71 +4,169 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.drive.driver.BaseDriveCommand;
+import frc.robot.commands.drive.driver.JoystickDrive;
+import frc.robot.oi.DriverControls;
+import frc.robot.subsystems.drive.chassis.DriveChassis;
+import frc.robot.subsystems.drive.gyro.GyroInputsAutoLogged;
+import frc.robot.subsystems.drive.modules.SwerveModuleIO;
+import frc.robot.subsystems.drive.modules.SwerveModuleInputsAutoLogged;
+import frc.robot.ui.GlassInterface;
+import frc.robot.util.PoseEstimator;
 
 public class Drive extends SubsystemBase {
-  public static final double WHEEL_RADIUS_METERS = Units.inchesToMeters(3.0);
 
-  private final DriveIO io;
-  private final DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
-  private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(new Rotation2d(), 0.0, 0.0);
+    private final DriveChassis m_chassis;
+    private final PoseEstimator m_poseEstimator;
 
-  /** Creates a new Drive. */
-  public Drive(DriveIO io) {
-    this.io = io;
-  }
+    private final SwerveModuleInputsAutoLogged[] m_moduleInputs = {
+            new SwerveModuleInputsAutoLogged(),
+            new SwerveModuleInputsAutoLogged(),
+            new SwerveModuleInputsAutoLogged(),
+            new SwerveModuleInputsAutoLogged(),
+    };
 
-  @Override
-  public void periodic() {
-    io.updateInputs(inputs);
-    Logger.getInstance().processInputs("Drive", inputs);
+    private final GyroInputsAutoLogged m_gyroInputs = new GyroInputsAutoLogged();
 
-    // Update odometry and log the new pose
-    odometry.update(new Rotation2d(-inputs.gyroYawRad), getLeftPositionMeters(), getRightPositionMeters());
-    Logger.getInstance().recordOutput("Odometry", getPose());
-  }
+    public Drive(DriveChassis chassis, PoseEstimator poseEstimator) {
+        m_chassis = chassis;
+        m_poseEstimator = poseEstimator;
+    }
 
-  /** Run open loop at the specified percentage. */
-  public void drivePercent(double leftPercent, double rightPercent) {
-    io.setVoltage(leftPercent * 12.0, rightPercent * 12.0);
-  }
+    @Override
+    public void periodic() {
+        // Update Gyro Log Inputs
+        getChassis().getGyro().updateInputs(m_gyroInputs);
+        Logger.getInstance().processInputs("Drive/Gyro", m_gyroInputs);
 
-  /** Run open loop based on stick positions. */
-  public void driveArcade(double xSpeed, double zRotation) {
-    var speeds = DifferentialDrive.arcadeDriveIK(xSpeed, zRotation, true);
-    io.setVoltage(speeds.left * 12.0, speeds.right * 12.0);
-  }
+        // Update Swerve Module Log Inputs
+        var modules = getChassis().getModules();
+        for (int i = 0; i < modules.length; i++) {
+            modules[i].updateInputs(m_moduleInputs[i]);
 
-  /** Stops the drive. */
-  public void stop() {
-    io.setVoltage(0.0, 0.0);
-  }
+            String key = "Drive/Module" + i;
+            Logger.getInstance().processInputs(key, m_moduleInputs[i]);
+        }
 
-  /** Returns the current odometry pose in meters. */
-  public Pose2d getPose() {
-    return odometry.getPoseMeters();
-  }
+        // Update Pose Estimation
+        updatePoseEstimation();
+        Logger.getInstance().recordOutput("Odometry", getPose());
+        Logger.getInstance().recordOutput("ModuleStates", getModuleStates());
 
-  /** Returns the position of the left wheels in meters. */
-  public double getLeftPositionMeters() {
-    return inputs.leftPositionRad * WHEEL_RADIUS_METERS;
-  }
+        GlassInterface.updateRobotPose(getPose());
+    }
 
-  /** Returns the position of the right wheels in meters. */
-  public double getRightPositionMeters() {
-    return inputs.rightPositionRad * WHEEL_RADIUS_METERS;
-  }
+    public DriveChassis getChassis() {
+        return m_chassis;
+    }
 
-  /** Returns the velocity of the left wheels in meters/second. */
-  public double getLeftVelocityMeters() {
-    return inputs.leftVelocityRadPerSec * WHEEL_RADIUS_METERS;
-  }
+    public void drive(ChassisSpeeds speeds) {
+        if (speeds.vxMetersPerSecond == 0 && speeds.vyMetersPerSecond == 0 && speeds.omegaRadiansPerSecond == 0) {
+            brake();
+            return;
+        }
 
-  /** Returns the velocity of the right wheels in meters/second. */
-  public double getRightVelocityMeters() {
-    return inputs.rightVelocityRadPerSec * WHEEL_RADIUS_METERS;
-  }
+        SwerveModuleState[] swerveModuleStates = getChassis().getKinematics().toSwerveModuleStates(speeds);
+
+        getChassis().setDesiredModuleStates(swerveModuleStates);
+    }
+
+    public void setModuleStates(SwerveModuleState[] desiredStates) {
+        getChassis().setDesiredModuleStates(desiredStates);
+    }
+
+    public SwerveModuleState[] getModuleStates() {
+        return getChassis().getModuleStates();
+    }
+
+    public SwerveModulePosition[] getModulePositions() {
+        return getChassis().getModulePositions();
+    }
+
+    public void brake() {
+        for (SwerveModuleIO module : getChassis().getModules()) {
+            module.setDesiredState(new SwerveModuleState(0, module.getRotation()));
+        }
+    }
+
+    public void setTurnCoastMode(boolean coast) {
+        getChassis().setTurnCoastMode(coast);
+    }
+
+    public void setDriveBrakeMode(boolean brake) {
+        getChassis().setDriveBrakeMode(brake);
+    }
+
+    public Pose2d getPose() {
+        return m_poseEstimator.getEstimatedPose();
+    }
+
+    public Rotation2d getHeading() {
+        return getChassis().getGyroAngle();
+    }
+
+    public void resetPose(Pose2d pose) {
+        Rotation2d offset = pose.getRotation();
+
+        getChassis().getGyro().reset(offset);
+        m_poseEstimator.resetPose(pose, offset, getModulePositions());
+    }
+
+    private void updatePoseEstimation() {
+        m_poseEstimator.update(getHeading(), getModuleStates(), getModulePositions());
+    }
+
+    //#region Sim Stuff
+
+    private double m_simGyroLastUpdated;
+
+    @Override
+    public void simulationPeriodic() {
+        double gyroDelta = getChassis().getKinematics().toChassisSpeeds(getModuleStates()).omegaRadiansPerSecond;
+        double ts = Timer.getFPGATimestamp();
+
+        double deltaTime = ts - m_simGyroLastUpdated;
+
+        getChassis().getGyro().addAngle(Rotation2d.fromRadians(gyroDelta * deltaTime));
+        m_simGyroLastUpdated = ts;
+    }
+
+    //#endregion
+
+    //#region Commands
+
+    public BaseDriveCommand driveCommand(DriverControls controls) {
+        return new JoystickDrive(
+                this,
+                () -> controls.getLeftInputY(),
+                () -> controls.getLeftInputX(),
+                () -> controls.getRightInputX());
+    }
+
+    public CommandBase brakeCommand() {
+        return runOnce(this::brake);
+    }
+
+    public CommandBase resetPoseCommand(Pose2d pose) {
+        return runOnce(() -> resetPose(pose));
+    }
+
+    public CommandBase setBrakeModeCommand(boolean driveEnabled, boolean turnEnabled) {
+        return runOnce(() -> {
+            setDriveBrakeMode(driveEnabled);
+            setTurnCoastMode(!turnEnabled);
+        });
+    }
+
+    public CommandBase setBrakeModeCommand(boolean enabled) {
+        return setBrakeModeCommand(enabled, enabled);
+    }
+
+    //#endregion
 }
