@@ -35,7 +35,7 @@ import frc.robot.subsystems.drive.gyro.PigeonIO;
 import frc.robot.subsystems.drive.modules.SwerveModuleIO;
 import frc.robot.subsystems.drive.modules.SwerveModuleIOSim;
 import frc.robot.subsystems.vision.Camera;
-import frc.robot.ui.GlassInterface;
+import frc.robot.util.FieldUtil;
 import frc.robot.util.NotSoPeriodic;
 import frc.robot.util.PoseEstimator;
 
@@ -190,7 +190,7 @@ public class RobotContainer {
             tags.put("AprilTag_" + tag.ID, tag.pose);
         }
 
-        GlassInterface.setObjectPoses("AprilTags",
+        FieldUtil.getDefaultField().setObjectPoses("AprilTags",
                 tags.values().stream().map(x -> x.toPose2d()).toArray(Pose2d[]::new));
     }
 
@@ -199,7 +199,7 @@ public class RobotContainer {
             m_simVision.processFrame(m_drive.getPose());
         });
 
-        GlassInterface.setSwerveRobotPose(m_drive.getPose(), m_drive.getChassis());
+        FieldUtil.getDefaultField().setSwerveRobotPose(m_drive.getPose(), m_drive.getChassis());
     }
 
     /**

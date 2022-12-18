@@ -19,7 +19,7 @@ import frc.robot.subsystems.drive.chassis.DriveChassis;
 import frc.robot.subsystems.drive.gyro.GyroInputsAutoLogged;
 import frc.robot.subsystems.drive.modules.SwerveModuleIO;
 import frc.robot.subsystems.drive.modules.SwerveModuleInputsAutoLogged;
-import frc.robot.ui.GlassInterface;
+import frc.robot.util.FieldUtil;
 import frc.robot.util.PoseEstimator;
 
 public class Drive extends SubsystemBase {
@@ -61,7 +61,7 @@ public class Drive extends SubsystemBase {
         Logger.getInstance().recordOutput("Odometry", getPose());
         Logger.getInstance().recordOutput("ModuleStates", getModuleStates());
 
-        GlassInterface.updateRobotPose(getPose());
+        FieldUtil.getDefaultField().updateRobotPose(getPose());
     }
 
     public DriveChassis getChassis() {

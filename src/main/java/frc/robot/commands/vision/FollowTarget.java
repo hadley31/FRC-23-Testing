@@ -3,12 +3,9 @@ package frc.robot.commands.vision;
 import java.util.Optional;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -17,15 +14,10 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Camera;
-import frc.robot.ui.GlassInterface;
+import frc.robot.util.FieldUtil;
 import frc.robot.util.GeometryUtils;
 
 public class FollowTarget extends CommandBase {
-    private final PIDController m_xController = new PIDController(6, 0, 0);
-    private final PIDController m_yController = new PIDController(6, 0, 0);
-    private final ProfiledPIDController m_thetaController = new ProfiledPIDController(6, 0, 0, new Constraints(
-            DriveConstants.kAutoMaxSpeedMetersPerSecond, DriveConstants.kAutoMaxAccelerationMetersPerSecondSq));
-
     private final Drive m_drive;
     private final Camera m_camera;
     private final int m_pipelineIndex;
@@ -45,7 +37,7 @@ public class FollowTarget extends CommandBase {
     @Override
     public void initialize() {
         m_camera.setPipelineIndex(m_pipelineIndex, true);
-        GlassInterface.setObjectPose("TestFiducial", FieldConstants.kHubPose.toPose2d());
+        FieldUtil.getDefaultField().setObjectPose("TestFiducial", FieldConstants.kHubPose.toPose2d());
     }
 
     @Override
@@ -101,7 +93,7 @@ public class FollowTarget extends CommandBase {
     }
 
     public Optional<Pose2d> getTestPose() {
-        return Optional.ofNullable(GlassInterface.getObjectPose("TestFiducial"));
+        return Optional.ofNullable(FieldUtil.getDefaultField().getObjectPose("TestFiducial"));
     }
 
     @Override

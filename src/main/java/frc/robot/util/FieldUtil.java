@@ -1,5 +1,6 @@
-package frc.robot.ui;
+package frc.robot.util;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -10,15 +11,29 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.chassis.DriveChassis;
 
-public class GlassInterface {
-    public static final String kFieldName = "Field";
-    private static final Field2d field = new Field2d();
+public class FieldUtil {
+    public static final String kDefaultFieldName = "Field";
+    private static Map<String, FieldUtil> fieldInstances = new HashMap<>();
 
-    public static void initialize() {
-        SmartDashboard.putData(kFieldName, field);
+    private final Field2d field = new Field2d();
+
+    private FieldUtil(String name) {
+        SmartDashboard.putData(name, field);
     }
 
-    public static void setObjects(Map<String, Pose2d> objects) {
+    public static synchronized FieldUtil getDefaultField() {
+        return getField(kDefaultFieldName);
+    }
+
+    public static synchronized FieldUtil getField(String name) {
+        if (!fieldInstances.containsKey(name)) {
+            fieldInstances.put(name, new FieldUtil(name));
+        }
+
+        return fieldInstances.get(name);
+    }
+
+    public void setObjects(Map<String, Pose2d> objects) {
         for (var entry : objects.entrySet()) {
             String objectName = entry.getKey();
             Pose2d objectPose = entry.getValue();
@@ -26,7 +41,7 @@ public class GlassInterface {
         }
     }
 
-    public static void setObjects3d(Map<String, Pose3d> objects) {
+    public void setObjects3d(Map<String, Pose3d> objects) {
         for (var entry : objects.entrySet()) {
             String objectName = entry.getKey();
             Pose2d objectPose = entry.getValue().toPose2d();
@@ -34,23 +49,23 @@ public class GlassInterface {
         }
     }
 
-    public static void setObjectPose(String name, Pose2d pose) {
+    public void setObjectPose(String name, Pose2d pose) {
         field.getObject(name).setPose(pose);
     }
 
-    public static void setObjectPoses(String name, Pose2d... poses) {
+    public void setObjectPoses(String name, Pose2d... poses) {
         field.getObject(name).setPoses(poses);
     }
 
-    public static void setTrajectory(String name, Trajectory trajectory) {
+    public void setTrajectory(String name, Trajectory trajectory) {
         field.getObject(name).setTrajectory(trajectory);
     }
 
-    public static void updateRobotPose(Pose2d pose) {
+    public void updateRobotPose(Pose2d pose) {
         field.setRobotPose(pose);
     }
 
-    public static void setSwerveRobotPose(Pose2d pose, DriveChassis chassis) {
+    public void setSwerveRobotPose(Pose2d pose, DriveChassis chassis) {
         updateRobotPose(pose);
 
         var states = chassis.getModuleStates();
@@ -68,7 +83,7 @@ public class GlassInterface {
         setObjectPoses("RobotSwerveModules", modulePoses);
     }
 
-    public static Pose2d getObjectPose(String name) {
+    public Pose2d getObjectPose(String name) {
         return field.getObject(name).getPose();
     }
 }

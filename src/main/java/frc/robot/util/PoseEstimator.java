@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.drive.chassis.DriveChassis;
 import frc.robot.subsystems.vision.Camera;
-import frc.robot.ui.GlassInterface;
 
 public class PoseEstimator {
     private final SwerveDrivePoseEstimator m_poseEstimator;
@@ -88,7 +87,7 @@ public class PoseEstimator {
         // Update pose estimator with vision result
         m_poseEstimator.addVisionMeasurement(visionEstimatedRobotPose, imageCaptureTime);
 
-        GlassInterface.setObjectPose("CameraEstimatedPose", visionEstimatedRobotPose);
+        FieldUtil.getDefaultField().setObjectPose("CameraEstimatedPose", visionEstimatedRobotPose);
         Logger.getInstance().recordOutput("VisionPose", visionEstimatedRobotPose);
     }
 }
