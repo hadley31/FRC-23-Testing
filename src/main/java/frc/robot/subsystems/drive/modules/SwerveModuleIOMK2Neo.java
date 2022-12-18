@@ -44,6 +44,7 @@ public class SwerveModuleIOMK2Neo implements SwerveModuleIO {
 
         // Define Encoder Conversion Factors
         m_turnMotorEncoder.setPositionConversionFactor(DriveConstants.kTurnPositionConversionFactor); // radians
+        m_turnMotorEncoder.setVelocityConversionFactor(DriveConstants.kTurnPositionConversionFactor / 60); // radians per second
 
         m_driveMotorEncoder.setPositionConversionFactor(DriveConstants.kDrivePositionConversionFactor); // meters
         m_driveMotorEncoder.setVelocityConversionFactor(DriveConstants.kDrivePositionConversionFactor / 60); // meters per second
@@ -58,8 +59,14 @@ public class SwerveModuleIOMK2Neo implements SwerveModuleIO {
 
     @Override
     public void updateInputs(SwerveModuleInputs inputs) {
-        // TODO Auto-generated method stub
+        inputs.driveAppliedVolts = m_driveMotor.getAppliedOutput();
+        inputs.drivePositionMeters = getDrivePositionMeters();
+        inputs.driveVelocityMetersPerSec = getVelocityMetersPerSecond();
 
+        inputs.turnAppliedVolts = m_turnMotor.getAppliedOutput();
+        inputs.turnAbsolutePositionRad = getAbsoluteRotation().getRadians();
+        inputs.turnPositionRad = getRotation().getRadians();
+        inputs.turnVelocityRadPerSec = m_turnMotorEncoder.getVelocity();
     }
 
     @Override
