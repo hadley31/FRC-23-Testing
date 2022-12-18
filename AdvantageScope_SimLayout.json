@@ -1,0 +1,90 @@
+{
+  "version": "2.0.0-beta-1",
+  "layout": [
+    {
+      "type": 5,
+      "fields": [
+        "/AdvantageKit/RealOutputs/Odometry",
+        null,
+        "/AdvantageKit/RealOutputs/VisionPose"
+      ],
+      "options": {
+        "game": "2022",
+        "unitDistance": "meters",
+        "unitRotation": "radians",
+        "origin": "right",
+        "size": 0.57,
+        "alliance": "blue",
+        "orientation": "blue left, red right"
+      },
+      "title": "Odometry"
+    },
+    {
+      "type": 8,
+      "fields": [],
+      "options": {
+        "ids": [
+          0,
+          1,
+          2
+        ],
+        "layouts": [
+          "Xbox Controller (White)",
+          "None",
+          "None"
+        ]
+      },
+      "title": "Joysticks"
+    },
+    {
+      "type": 9,
+      "fields": [
+        null,
+        "/AdvantageKit/RealOutputs/ModuleStates",
+        "/AdvantageKit/RealOutputs/Odometry/2"
+      ],
+      "options": {
+        "maxSpeed": 4.5,
+        "rotationUnits": "radians",
+        "arrangement": "0,1,2,3",
+        "sizeLeftRight": 0.57,
+        "sizeFrontBack": 0.57,
+        "forwardDirection": "right"
+      },
+      "title": "Swerve"
+    },
+    {
+      "type": 10,
+      "fields": [
+        null,
+        null
+      ],
+      "options": {
+        "width": 960,
+        "height": 720,
+        "group": 0,
+        "pointShape": "plus",
+        "pointSize": "medium"
+      },
+      "title": "Points"
+    },
+    {
+      "type": 4,
+      "fields": [
+        null,
+        null,
+        null
+      ],
+      "selectionType": "full",
+      "selectionRangeMin": 0,
+      "selectionRangeMax": 10,
+      "measurementType": "independent",
+      "measurementSampling": "fixed",
+      "measurementSamplingPeriod": 20,
+      "histogramMin": 0,
+      "histogramMax": 10,
+      "histogramStep": 1,
+      "title": "Statistics"
+    }
+  ]
+}

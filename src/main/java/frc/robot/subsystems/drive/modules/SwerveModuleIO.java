@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.robot.LoggableInputs;
+import frc.lib.advantagekit.LoggableInputs;
 import frc.robot.subsystems.drive.modules.SwerveModuleIO.SwerveModuleInputs;
 
 public interface SwerveModuleIO extends LoggableInputs<SwerveModuleInputs> {

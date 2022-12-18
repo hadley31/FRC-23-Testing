@@ -2,6 +2,8 @@ package frc.robot.util;
 
 import java.util.Optional;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -87,5 +89,6 @@ public class PoseEstimator {
         m_poseEstimator.addVisionMeasurement(visionEstimatedRobotPose, imageCaptureTime);
 
         GlassInterface.setObjectPose("CameraEstimatedPose", visionEstimatedRobotPose);
+        Logger.getInstance().recordOutput("VisionPose", visionEstimatedRobotPose);
     }
 }

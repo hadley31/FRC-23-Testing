@@ -5,11 +5,13 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.drive.driver.BaseDriveCommand;
 import frc.robot.commands.drive.driver.JoystickDrive;
 import frc.robot.oi.DriverControls;
@@ -74,10 +76,14 @@ public class Drive extends SubsystemBase {
 
         SwerveModuleState[] swerveModuleStates = getChassis().getKinematics().toSwerveModuleStates(speeds);
 
-        getChassis().setDesiredModuleStates(swerveModuleStates);
+        setModuleStates(swerveModuleStates);
     }
 
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
+    public void setModuleStates(SwerveModuleState... desiredStates) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(
+                desiredStates,
+                DriveConstants.kMaxSpeedMetersPerSecond);
+
         getChassis().setDesiredModuleStates(desiredStates);
     }
 

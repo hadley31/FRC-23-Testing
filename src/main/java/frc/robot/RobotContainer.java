@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.vision.photonvision.SimVisionSystem;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ElectricalConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.autonomous.AutoFactory;
@@ -50,7 +51,7 @@ public class RobotContainer {
     private Camera m_camera;
 
     private AprilTagFieldLayout m_tagLayout;
-    private AutoFactory m_autoFactory = new AutoFactory(m_drive, m_camera);
+    private AutoFactory m_autoFactory;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -146,7 +147,7 @@ public class RobotContainer {
     public void configureAuto() {
         m_autoFactory = new AutoFactory(m_drive, m_camera);
 
-        m_autoFactory.loadAutoPathByName("5 Ball Auto");
+        m_autoFactory.loadAutoPathByName(AutoConstants.kDefaultAuto);
     }
 
     /**
@@ -191,7 +192,6 @@ public class RobotContainer {
 
         GlassInterface.setObjectPoses("AprilTags",
                 tags.values().stream().map(x -> x.toPose2d()).toArray(Pose2d[]::new));
-        // GlassInterface.setObjects3d(tags);
     }
 
     public void simulationPeriodic() {

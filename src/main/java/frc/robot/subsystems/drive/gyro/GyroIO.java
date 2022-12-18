@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
-import frc.robot.LoggableInputs;
+import frc.lib.advantagekit.LoggableInputs;
 import frc.robot.subsystems.drive.gyro.GyroIO.GyroInputs;
 
 public interface GyroIO extends LoggableInputs<GyroInputs> {

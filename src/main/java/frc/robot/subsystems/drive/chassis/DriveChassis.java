@@ -6,7 +6,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.modules.SwerveModuleIO;
 
@@ -66,10 +65,6 @@ public interface DriveChassis {
     }
 
     public default void setDesiredModuleStates(SwerveModuleState... desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(
-                desiredStates,
-                DriveConstants.kMaxSpeedMetersPerSecond);
-
         var modules = getModules();
         for (int i = 0; i < modules.length; i++) {
             modules[i].setDesiredState(desiredStates[i]);
