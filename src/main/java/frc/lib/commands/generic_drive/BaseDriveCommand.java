@@ -4,6 +4,8 @@
 
 package frc.lib.commands.generic_drive;
 
+import static edu.wpi.first.util.ErrorMessages.requireNonNullParam;
+
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -19,9 +21,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public abstract class BaseDriveCommand extends CommandBase {
     protected final DriveCommandConfig m_drive;
 
-    public BaseDriveCommand(DriveCommandConfig config) {
-        m_drive = config;
-        addRequirements(config.getRequirements());
+    public BaseDriveCommand(DriveCommandConfig drive) {
+        m_drive = requireNonNullParam(drive, "drive", "BaseDriveCommand");
+        addRequirements(drive.getRequirements());
     }
 
     // Called when the command is initially scheduled.
