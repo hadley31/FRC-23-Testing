@@ -31,7 +31,7 @@ public class VisionAssistedDrive extends JoystickDrive {
     }
 
     @Override
-    protected double getRotationSpeed() {
+    public double getRotationSpeed() {
         double thetaInput = super.getRotationSpeed();
 
         if (thetaInput != 0.0) {

@@ -37,28 +37,8 @@ public class DriverXboxControls implements DriverControls {
     }
 
     @Override
-    public Trigger getTargetFollowDriveMode() {
-        return m_controller.leftBumper();
-    }
-
-    @Override
     public Trigger getTargetAngleJoystickDriveMode() {
         return new Trigger(() -> m_controller.getLeftTriggerAxis() > 0.5);
-    }
-
-    @Override
-    public Trigger getOrbitDriveMode() {
-        return m_controller.rightBumper();
-    }
-
-    @Override
-    public Trigger getTest1Button() {
-        return m_controller.a();
-    }
-
-    @Override
-    public Trigger getRumbleButton() {
-        return m_controller.x();
     }
 
     @Override

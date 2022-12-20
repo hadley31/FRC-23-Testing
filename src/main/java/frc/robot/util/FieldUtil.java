@@ -86,4 +86,8 @@ public class FieldUtil {
     public Pose2d getObjectPose(String name) {
         return field.getObject(name).getPose();
     }
+
+    public void removeObject(String name) {
+        field.getObject(name).setPoses();
+    }
 }

@@ -4,10 +4,10 @@ import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
-import frc.lib.advantagekit.LoggableInputs;
+import frc.lib.advantagekit.LoggedIO;
 import frc.robot.subsystems.drive.gyro.GyroIO.GyroInputs;
 
-public interface GyroIO extends LoggableInputs<GyroInputs> {
+public interface GyroIO extends LoggedIO<GyroInputs> {
     @AutoLog
     public static class GyroInputs {
         public double rawAngleRads;

@@ -1,14 +1,15 @@
-package frc.robot.commands.drive.turn;
+package frc.lib.commands.generic_drive.turn;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.subsystems.drive.Drive;
+import frc.lib.commands.generic_drive.DriveCommandConfig;
 
 public class TurnByAngle extends BaseTurnCommand {
     private Rotation2d m_inputTurnAngle;
     private Rotation2d m_desiredRobotAngle;
 
-    public TurnByAngle(Drive drive, Rotation2d angle) {
-        super(drive);
+    public TurnByAngle(DriveCommandConfig drive, PIDController controller, Rotation2d angle) {
+        super(drive, controller);
         m_inputTurnAngle = angle;
     }
 

@@ -49,7 +49,6 @@ public class AutoFactory {
     }
 
     public CommandBase getAutoCommand() {
-
         if (m_paths == null) {
             loadAutoPathByName(AutoConstants.kDefaultAuto);
         }

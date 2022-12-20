@@ -13,15 +13,7 @@ public interface DriverControls extends RumbleControls {
 
     public Trigger getRobotRelativeDriveMode();
 
-    public Trigger getTargetFollowDriveMode();
-
     public Trigger getTargetAngleJoystickDriveMode();
-
-    public Trigger getOrbitDriveMode();
-
-    public Trigger getTest1Button();
-
-    public Trigger getRumbleButton();
 
     @Override
     public default void setRumble(double value) {

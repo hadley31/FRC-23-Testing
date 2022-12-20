@@ -13,68 +13,36 @@ public class SingleUserXboxControls implements DriverControls, OperatorControls 
 
     @Override
     public Trigger getExampleControl() {
-        // TODO Auto-generated method stub
-        return null;
+        return m_controller.a();
     }
 
     @Override
     public double getLeftInputX() {
-        // TODO Auto-generated method stub
-        return 0;
+        return m_controller.getLeftX();
     }
 
     @Override
     public double getLeftInputY() {
-        // TODO Auto-generated method stub
-        return 0;
+        return m_controller.getLeftY();
     }
 
     @Override
     public double getRightInputX() {
-        // TODO Auto-generated method stub
-        return 0;
+        return m_controller.getRightX();
     }
 
     @Override
     public double getRightInputY() {
-        // TODO Auto-generated method stub
-        return 0;
+        return m_controller.getRightY();
     }
 
     @Override
     public Trigger getRobotRelativeDriveMode() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Trigger getTargetFollowDriveMode() {
-        // TODO Auto-generated method stub
-        return null;
+        return m_controller.rightBumper();
     }
 
     @Override
     public Trigger getTargetAngleJoystickDriveMode() {
-        // TODO Auto-generated method stub
-        return null;
+        return new Trigger(() -> m_controller.getLeftTriggerAxis() > 0.2);
     }
-
-    @Override
-    public Trigger getOrbitDriveMode() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Trigger getTest1Button() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Trigger getRumbleButton() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

@@ -1,5 +1,5 @@
 package frc.lib.advantagekit;
 
-public interface LoggableInputs<T> {
+public interface LoggedIO<T> {
     public void updateInputs(T inputs);
 }

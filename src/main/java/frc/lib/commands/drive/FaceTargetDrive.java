@@ -1,4 +1,4 @@
-package frc.robot.commands.drive.driver;
+package frc.lib.commands.drive;
 
 import java.util.function.Supplier;
 
@@ -12,20 +12,17 @@ public class FaceTargetDrive extends TargetAngleDrive {
     private static final double kPredictiveMultiplier = 5.5;
     private final Supplier<Translation2d> m_targetSupplier;
 
-    public FaceTargetDrive(Drive drive, Supplier<Double> xInputSupplier, Supplier<Double> yInputSupplier,
-            Supplier<Translation2d> targetSupplier) {
-        super(drive, xInputSupplier, yInputSupplier);
+    public FaceTargetDrive(Drive drive, Supplier<Translation2d> targetSupplier) {
+        super(drive);
         m_targetSupplier = targetSupplier;
     }
 
-    public FaceTargetDrive(Drive drive, Supplier<Double> xInputSupplier, Supplier<Double> yInputSupplier,
-            Translation2d target) {
-        this(drive, xInputSupplier, yInputSupplier, () -> target);
+    public FaceTargetDrive(Drive drive, Translation2d target) {
+        this(drive, () -> target);
     }
 
-    public FaceTargetDrive(Drive drive, Supplier<Double> xInputSupplier, Supplier<Double> yInputSupplier,
-            Pose2d target) {
-        this(drive, xInputSupplier, yInputSupplier, () -> target.getTranslation());
+    public FaceTargetDrive(Drive drive, Pose2d target) {
+        this(drive, () -> target.getTranslation());
     }
 
     @Override

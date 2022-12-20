@@ -3,6 +3,7 @@ package frc.robot.commands.drive.driver;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.lib.commands.drive.TargetAngleDrive;
 import frc.robot.subsystems.drive.Drive;
 
 public class TargetAngleJoystickDrive extends TargetAngleDrive {
@@ -11,9 +12,9 @@ public class TargetAngleJoystickDrive extends TargetAngleDrive {
     private final Supplier<Double> m_rotationYInputSupplier;
     private Rotation2d m_desiredRotation;
 
-    public TargetAngleJoystickDrive(Drive drive, Supplier<Double> xInputSupplier, Supplier<Double> yInputSupplier,
+    public TargetAngleJoystickDrive(Drive drive,
             Supplier<Double> rotationXInputSupplier, Supplier<Double> rotationYInputSupplier) {
-        super(drive, xInputSupplier, yInputSupplier);
+        super(drive);
         m_rotationXInputSupplier = rotationXInputSupplier;
         m_rotationYInputSupplier = rotationYInputSupplier;
     }
@@ -21,7 +22,7 @@ public class TargetAngleJoystickDrive extends TargetAngleDrive {
     @Override
     public void initialize() {
         super.initialize();
-        m_desiredRotation = m_drive.getHeading();
+        m_desiredRotation = m_drive.getPose().getRotation();
     }
 
     @Override

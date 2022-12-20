@@ -1,19 +1,16 @@
 package frc.robot.oi;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class DriverJoystickControls implements DriverControls {
-
-    private static final Trigger kEmptyTrigger = new Trigger(() -> false);
-
-    private final Joystick m_leftJoystick;
-    private final Joystick m_rightJoystick;
+    private final CommandJoystick m_leftJoystick;
+    private final CommandJoystick m_rightJoystick;
 
     public DriverJoystickControls(int leftPort, int rightPort) {
-        m_leftJoystick = new Joystick(leftPort);
-        m_rightJoystick = new Joystick(rightPort);
+        m_leftJoystick = new CommandJoystick(leftPort);
+        m_rightJoystick = new CommandJoystick(rightPort);
     }
 
     @Override
@@ -38,41 +35,19 @@ public class DriverJoystickControls implements DriverControls {
 
     @Override
     public Trigger getRobotRelativeDriveMode() {
-        return new Trigger(() -> m_rightJoystick.getRawButton(2));
-    }
-
-    @Override
-    public Trigger getTargetFollowDriveMode() {
-        return new Trigger(() -> m_leftJoystick.getRawButton(2));
+        return m_rightJoystick.button(2);
     }
 
     @Override
     public Trigger getTargetAngleJoystickDriveMode() {
-        return new Trigger(() -> m_leftJoystick.getRawButton(4));
-    }
-
-    @Override
-    public Trigger getOrbitDriveMode() {
-        return kEmptyTrigger;
-    }
-
-    @Override
-    public Trigger getTest1Button() {
-        // TODO Auto-generated method stub
-        return kEmptyTrigger;
-    }
-
-    @Override
-    public Trigger getRumbleButton() {
-        // TODO Auto-generated method stub
-        return kEmptyTrigger;
+        return m_leftJoystick.button(4);
     }
 
     @Override
     public void setRumble(double value) {
-        m_leftJoystick.setRumble(RumbleType.kLeftRumble, value);
-        m_leftJoystick.setRumble(RumbleType.kRightRumble, value);
-        m_rightJoystick.setRumble(RumbleType.kLeftRumble, value);
-        m_rightJoystick.setRumble(RumbleType.kRightRumble, value);
+        m_leftJoystick.getHID().setRumble(RumbleType.kLeftRumble, value);
+        m_leftJoystick.getHID().setRumble(RumbleType.kRightRumble, value);
+        m_rightJoystick.getHID().setRumble(RumbleType.kLeftRumble, value);
+        m_rightJoystick.getHID().setRumble(RumbleType.kRightRumble, value);
     }
 }

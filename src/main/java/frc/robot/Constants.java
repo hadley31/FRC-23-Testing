@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.GeometryUtils;
 
 /**
@@ -45,6 +46,7 @@ public final class Constants {
     public static final double TWO_PI = 2 * Math.PI;
     public static final boolean kTuningMode = true;
     public static final String kAprilTagFieldLayoutFilename = "2022-taglayout.json";
+    public static final Trigger kEmptyTrigger = new Trigger(() -> false);
 
     public static final class BuildConstants {
         public static final double kRobotWeightKg = Units.lbsToKilograms(100);

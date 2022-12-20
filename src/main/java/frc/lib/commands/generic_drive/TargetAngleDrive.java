@@ -1,16 +1,21 @@
-package frc.robot.commands.drive.driver;
-
-import java.util.function.Supplier;
+package frc.lib.commands.generic_drive;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.subsystems.drive.Drive;
+import edu.wpi.first.math.util.Units;
 
-public abstract class TargetAngleDrive extends LinearJoystickDrive {
-    private final PIDController m_controller = new PIDController(10, 0.1, .02);
+public abstract class TargetAngleDrive extends DriveCommandAdapter {
+    private static final double kMaxErrorRadians = Units.degreesToRadians(1.0);
+    private static final double kMaxErrorRadiansPerSecond = Units.degreesToRadians(1.0);
 
-    public TargetAngleDrive(Drive drive, Supplier<Double> xInputSupplier, Supplier<Double> yInputSupplier) {
-        super(drive, xInputSupplier, yInputSupplier);
+    protected final PIDController m_controller;
+
+    public TargetAngleDrive(DriveCommandConfig config, PIDController controller) {
+        super(config);
+
+        m_controller = controller;
+
+        m_controller.setTolerance(kMaxErrorRadians, kMaxErrorRadiansPerSecond);
         m_controller.enableContinuousInput(-Math.PI, Math.PI);
     }
 

@@ -11,8 +11,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.commands.drive.BaseDriveCommand;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.commands.drive.driver.BaseDriveCommand;
 import frc.robot.commands.drive.driver.JoystickDrive;
 import frc.robot.oi.DriverControls;
 import frc.robot.subsystems.drive.chassis.DriveChassis;
@@ -61,7 +61,7 @@ public class Drive extends SubsystemBase {
         Logger.getInstance().recordOutput("Odometry", getPose());
         Logger.getInstance().recordOutput("ModuleStates", getModuleStates());
 
-        FieldUtil.getDefaultField().updateRobotPose(getPose());
+        FieldUtil.getDefaultField().setSwerveRobotPose(getPose(), getChassis());
     }
 
     public DriveChassis getChassis() {
@@ -74,6 +74,14 @@ public class Drive extends SubsystemBase {
             return;
         }
 
+        Logger.getInstance().recordOutput(
+                "DesiredSpeeds",
+                new double[] {
+                        speeds.vxMetersPerSecond,
+                        speeds.vyMetersPerSecond,
+                        speeds.omegaRadiansPerSecond
+                });
+
         SwerveModuleState[] swerveModuleStates = getChassis().getKinematics().toSwerveModuleStates(speeds);
 
         setModuleStates(swerveModuleStates);
@@ -83,6 +91,8 @@ public class Drive extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(
                 desiredStates,
                 DriveConstants.kMaxSpeedMetersPerSecond);
+
+        Logger.getInstance().recordOutput("DesiredModuleStates", desiredStates);
 
         getChassis().setDesiredModuleStates(desiredStates);
     }

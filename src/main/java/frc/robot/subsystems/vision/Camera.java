@@ -4,6 +4,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 
@@ -55,4 +56,19 @@ public class Camera extends SubsystemBase {
         return m_latestResult;
     }
 
+    //#region Commands
+
+    public CommandBase setPipelineIndexCommand(int index) {
+        return runOnce(() -> setPipelineIndex(index, true));
+    }
+
+    public CommandBase setLEDStateComand(boolean enabled) {
+        return runOnce(() -> setLEDs(enabled));
+    }
+
+    public CommandBase toggleLEDStateCommand() {
+        return runOnce(() -> setLEDs(!getLEDState()));
+    }
+
+    //#endregion
 }

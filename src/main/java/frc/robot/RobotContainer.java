@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import org.photonvision.PhotonCamera;
 import org.photonvision.SimPhotonCamera;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -25,7 +26,8 @@ import frc.robot.Constants.ElectricalConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.autonomous.AutoFactory;
 import frc.robot.commands.debug.DebugCommands;
-import frc.robot.commands.drive.driver.DriveCommandBoundaryWrapper;
+import frc.robot.commands.debug.DriveBoundary;
+import frc.robot.commands.debug.DriveBoundary.Bounds;
 import frc.robot.oi.DriverControls;
 import frc.robot.oi.DriverXboxControls;
 import frc.robot.subsystems.drive.Drive;
@@ -33,6 +35,7 @@ import frc.robot.subsystems.drive.chassis.CompetitionChassis;
 import frc.robot.subsystems.drive.chassis.DriveChassis;
 import frc.robot.subsystems.drive.gyro.PigeonIO;
 import frc.robot.subsystems.drive.modules.SwerveModuleIO;
+import frc.robot.subsystems.drive.modules.SwerveModuleIOMK2Neo;
 import frc.robot.subsystems.drive.modules.SwerveModuleIOSim;
 import frc.robot.subsystems.vision.Camera;
 import frc.robot.util.FieldUtil;
@@ -90,30 +93,30 @@ public class RobotContainer {
                     chassis,
                     new PoseEstimator(chassis, m_camera, m_tagLayout));
         } else {
-            //     m_camera = new Camera(new PhotonCamera(VisionConstants.kCameraName));
-            //     DriveChassis chassis = new CompetitionChassis(
-            //             new SwerveModuleIO[] {
-            //                     new SwerveModuleIOMK2Neo(
-            //                             ElectricalConstants.kFrontLeftTurnMotorPort,
-            //                             ElectricalConstants.kFrontLeftDriveMotorPort,
-            //                             ElectricalConstants.kFrontLeftCANCoderPort),
-            //                     new SwerveModuleIOMK2Neo(
-            //                             ElectricalConstants.kFrontRightTurnMotorPort,
-            //                             ElectricalConstants.kFrontRightDriveMotorPort,
-            //                             ElectricalConstants.kFrontRightCANCoderPort),
-            //                     new SwerveModuleIOMK2Neo(
-            //                             ElectricalConstants.kBackLeftTurnMotorPort,
-            //                             ElectricalConstants.kBackLeftDriveMotorPort,
-            //                             ElectricalConstants.kBackLeftCANCoderPort),
-            //                     new SwerveModuleIOMK2Neo(
-            //                             ElectricalConstants.kBackRightTurnMotorPort,
-            //                             ElectricalConstants.kBackRightDriveMotorPort,
-            //                             ElectricalConstants.kBackRightCANCoderPort),
-            //             },
-            //             new WPI_Pigeon2(ElectricalConstants.kGyroPort));
-            //     m_drive = new Drive(
-            //             chassis,
-            //             new PoseEstimator(chassis, m_camera));
+            m_camera = new Camera(new PhotonCamera(VisionConstants.kCameraName));
+            DriveChassis chassis = new CompetitionChassis(
+                    new SwerveModuleIO[] {
+                            new SwerveModuleIOMK2Neo(
+                                    ElectricalConstants.kFrontLeftTurnMotorPort,
+                                    ElectricalConstants.kFrontLeftDriveMotorPort,
+                                    ElectricalConstants.kFrontLeftCANCoderPort),
+                            new SwerveModuleIOMK2Neo(
+                                    ElectricalConstants.kFrontRightTurnMotorPort,
+                                    ElectricalConstants.kFrontRightDriveMotorPort,
+                                    ElectricalConstants.kFrontRightCANCoderPort),
+                            new SwerveModuleIOMK2Neo(
+                                    ElectricalConstants.kBackLeftTurnMotorPort,
+                                    ElectricalConstants.kBackLeftDriveMotorPort,
+                                    ElectricalConstants.kBackLeftCANCoderPort),
+                            new SwerveModuleIOMK2Neo(
+                                    ElectricalConstants.kBackRightTurnMotorPort,
+                                    ElectricalConstants.kBackRightDriveMotorPort,
+                                    ElectricalConstants.kBackRightCANCoderPort),
+                    },
+                    new PigeonIO(ElectricalConstants.kGyroPort));
+            m_drive = new Drive(
+                    chassis,
+                    new PoseEstimator(chassis, m_camera, m_tagLayout));
         }
     }
 
@@ -129,20 +132,26 @@ public class RobotContainer {
 
         // OperatorControls operatorControls = new OperatorXboxControls(2);
 
-        var boundedJoystickDriveCommand = new DriveCommandBoundaryWrapper(m_drive.driveCommand(driverControls));
+        var driveBounds = new Bounds(2, 2, 6, 4);
+        var boundedJoystickDriveCommand = new DriveBoundary(
+                m_drive.driveCommand(driverControls),
+                driveBounds);
 
         // Define subsystem default commands
         m_drive.setDefaultCommand(boundedJoystickDriveCommand);
 
         // Define Driver Control Mappings
-        driverControls.getRobotRelativeDriveMode().whileTrue(boundedJoystickDriveCommand.withFieldRelative(false));
+        driverControls.getRobotRelativeDriveMode()
+                .whileTrue(boundedJoystickDriveCommand.withFieldRelative(false));
 
         // Define Operator Control Mappings
         // operatorControls.getExampleControl().whenActive(new PrintCommand("Operator did a thing!"));
     }
 
     /**
-     * Loads the auto path from the json path file when the robot is first initialized
+     * Loads the auto path from the json path file when the robot is first initialized.
+     * This is so that the robot does not need to do any slow loading of files just as
+     * autonomous starts
      */
     public void configureAuto() {
         m_autoFactory = new AutoFactory(m_drive, m_camera);
@@ -156,10 +165,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // int targetFiducial = 6;
-        // var targetOffset = new Transform2d(new Translation2d(2, 0), Rotation2d.fromDegrees(180));
-        // return new FollowTarget(m_drive, m_camera, 0, targetFiducial, targetOffset);
-
         return m_autoFactory.getAutoCommand();
     }
 
@@ -167,15 +172,13 @@ public class RobotContainer {
         DebugCommands.brakeAndReset(m_drive).schedule();
     }
 
-    /**
-     * Simulation
-     */
+    //#region Simulation
 
     private SimVisionSystem m_simVision;
     private NotSoPeriodic m_cameraNotSoPeriodic;
 
     public void simulationInit() {
-        m_cameraNotSoPeriodic = new NotSoPeriodic(1);
+        m_cameraNotSoPeriodic = new NotSoPeriodic(3);
         m_simVision = new SimVisionSystem(
                 VisionConstants.kCameraName,
                 70,
@@ -198,11 +201,7 @@ public class RobotContainer {
         m_cameraNotSoPeriodic.call(() -> {
             m_simVision.processFrame(m_drive.getPose());
         });
-
-        FieldUtil.getDefaultField().setSwerveRobotPose(m_drive.getPose(), m_drive.getChassis());
     }
 
-    /**
-     * End Simulation
-     */
+    //#endregion
 }

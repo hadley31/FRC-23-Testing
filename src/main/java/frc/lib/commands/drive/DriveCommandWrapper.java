@@ -1,7 +1,8 @@
-package frc.robot.commands.drive.driver;
+package frc.lib.commands.drive;
 
 import java.util.Set;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class DriveCommandWrapper extends BaseDriveCommand {
@@ -12,9 +13,7 @@ public class DriveCommandWrapper extends BaseDriveCommand {
         m_command = driveCommand;
     }
 
-    /**
-     * Override Built-In Methods
-     */
+    //#region Override Built-In Command Methods
 
     @Override
     public void initialize() {
@@ -36,9 +35,12 @@ public class DriveCommandWrapper extends BaseDriveCommand {
         return m_command.getRequirements();
     }
 
-    /**
-     * Override BaseDriveCommand Methods
-     */
+    //#region Override BaseDriveCommand Methods
+
+    @Override
+    protected ChassisSpeeds getChassisSpeeds(double x, double y, double omega, boolean isFieldRelative) {
+        return m_command.getChassisSpeeds(x, y, omega, isFieldRelative);
+    }
 
     @Override
     protected double getXSpeed() {
@@ -59,4 +61,6 @@ public class DriveCommandWrapper extends BaseDriveCommand {
     protected boolean getFieldRelative() {
         return m_command.getFieldRelative();
     }
+
+    //#endregion
 }
