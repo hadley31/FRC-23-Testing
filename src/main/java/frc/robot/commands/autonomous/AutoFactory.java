@@ -74,6 +74,6 @@ public class AutoFactory {
                 m_eventMap,
                 m_drive);
 
-        return autoBuilder.fullAuto(m_paths).andThen(() -> m_drive.brake(), m_drive);
+        return autoBuilder.fullAuto(m_paths).andThen(m_drive.brakeCommand());
     }
 }

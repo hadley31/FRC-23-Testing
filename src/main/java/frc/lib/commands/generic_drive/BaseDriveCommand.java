@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -151,6 +152,12 @@ public abstract class BaseDriveCommand extends CommandBase {
         return new DriveCommandAdapter(config);
     }
 
+    /**
+     * Creates a {@link BaseDriveCommand} builder class with the given config.
+     * This is the most efficient way to create a custom drive command without introducing numerous wrapper classes.
+     * @param config
+     * @return
+     */
     public static DriveCommandBuilder builder(DriveCommandConfig config) {
         return new DriveCommandBuilder(config);
     }
@@ -215,6 +222,10 @@ public abstract class BaseDriveCommand extends CommandBase {
 
         public DriveCommandBuilder facesTarget(Pose2d pose) {
             return facesTarget(() -> pose);
+        }
+
+        public DriveCommandBuilder facesTarget(Pose3d pose) {
+            return facesTarget(() -> pose.toPose2d());
         }
 
         public DriveCommandBuilder withSpeedSuppliers(
