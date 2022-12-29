@@ -6,8 +6,11 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.SimPhotonCamera;
+
+import com.revrobotics.REVPhysicsSim;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -73,6 +76,14 @@ public class RobotContainer {
 
             m_tagLayout = new AprilTagFieldLayout(Constants.kAprilTagFieldLayoutFilename);
             m_tagLayout.setOrigin(originPosition);
+
+            Logger.getInstance().recordOutput(
+                    "AprilTag ID",
+                    m_tagLayout.getTags().stream().mapToLong(x -> x.ID).toArray());
+
+            Logger.getInstance().recordOutput(
+                    "AprilTag Poses",
+                    m_tagLayout.getTags().stream().map(x -> x.pose).toArray(Pose3d[]::new));
         } catch (Exception e) {
             System.out.println("Unable to load apriltag field layout");
         }
@@ -156,6 +167,7 @@ public class RobotContainer {
     public void configureAuto() {
         m_autoFactory = new AutoFactory(m_drive, m_camera);
 
+        // TODO: add auto ui selector
         m_autoFactory.loadAutoPathByName(AutoConstants.kDefaultAuto);
     }
 
@@ -165,6 +177,11 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
+        if (Robot.isSimulation()) {
+            // Reload from file if we're in simulation to get latest changes
+            m_autoFactory.loadSelectedPathFromFile();
+        }
+
         return m_autoFactory.getAutoCommand();
     }
 
@@ -178,7 +195,7 @@ public class RobotContainer {
     private NotSoPeriodic m_cameraNotSoPeriodic;
 
     public void simulationInit() {
-        m_cameraNotSoPeriodic = new NotSoPeriodic(3);
+        m_cameraNotSoPeriodic = new NotSoPeriodic(1);
         m_simVision = new SimVisionSystem(
                 VisionConstants.kCameraName,
                 70,
@@ -198,6 +215,7 @@ public class RobotContainer {
     }
 
     public void simulationPeriodic() {
+        REVPhysicsSim.getInstance().run();
         m_cameraNotSoPeriodic.call(() -> {
             m_simVision.processFrame(m_drive.getPose());
         });

@@ -42,9 +42,10 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
-          "does not exist"
+          "a",
+          "b"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "before",
         "waitTime": 1.0
       }
@@ -68,9 +69,13 @@
       "isLocked": true,
       "isStopPoint": true,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "before",
+        "names": [
+          "c",
+          "b",
+          "a"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
         "waitTime": 1.0
       }
     },
@@ -93,10 +98,13 @@
       "isLocked": true,
       "isStopPoint": true,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "a",
+          "2"
+        ],
+        "executionBehavior": "parallelDeadline",
         "waitBehavior": "before",
-        "waitTime": 1.0
+        "waitTime": 2.0
       }
     },
     {
@@ -115,7 +123,10 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "a",
+          "b"
+        ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -145,7 +156,7 @@
       ]
     },
     {
-      "position": 3.8909090909090915,
+      "position": 3.8545454545454536,
       "names": [
         "PreShoot3"
       ]

@@ -6,8 +6,12 @@ package frc.lib.commands.generic_drive;
 
 import static edu.wpi.first.util.ErrorMessages.requireNonNullParam;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -143,7 +147,107 @@ public abstract class BaseDriveCommand extends CommandBase {
         };
     }
 
-    public static BaseDriveCommand create(DriveCommandConfig config) {
+    public static DriveCommandAdapter createSkeleton(DriveCommandConfig config) {
         return new DriveCommandAdapter(config);
+    }
+
+    public static DriveCommandBuilder builder(DriveCommandConfig config) {
+        return new DriveCommandBuilder(config);
+    }
+
+    public static class DriveCommandBuilder {
+        private final DriveCommandConfig m_config;
+        private Optional<Supplier<Translation2d>> m_faceTarget = Optional.empty();
+        private Optional<PIDController> m_turnPIDController = Optional.empty();
+        private Optional<Supplier<Double>> m_xSpeedSupplier = Optional.empty();
+        private Optional<Supplier<Double>> m_ySpeedSupplier = Optional.empty();
+        private Optional<Supplier<Double>> m_rotationSpeedSupplier = Optional.empty();
+        private Optional<Supplier<Boolean>> m_fieldOriented = Optional.empty();
+
+        private DriveCommandBuilder(DriveCommandConfig config) {
+            m_config = requireNonNullParam(config, "config", "DriveCommandBuilder");
+        }
+
+        public BaseDriveCommand build() {
+            if (m_faceTarget.isPresent()) {
+                PIDController controller = m_turnPIDController.orElse(null);
+                return new FaceTargetDrive(m_config, controller, m_faceTarget.get()) {
+                    @Override
+                    protected double getXSpeed() {
+                        return m_xSpeedSupplier.orElse(() -> 0.0).get();
+                    };
+
+                    @Override
+                    protected double getYSpeed() {
+                        return m_ySpeedSupplier.orElse(() -> 0.0).get();
+                    };
+
+                    @Override
+                    protected boolean getFieldRelative() {
+                        return m_fieldOriented.orElse(() -> false).get();
+                    };
+                };
+            }
+
+            return new DriveCommandAdapter(m_config) {
+                protected double getXSpeed() {
+                    return m_xSpeedSupplier.orElse(() -> 0.0).get();
+                };
+
+                protected double getYSpeed() {
+                    return m_ySpeedSupplier.orElse(() -> 0.0).get();
+                };
+
+                protected double getRotationSpeed() {
+                    return m_rotationSpeedSupplier.orElse(() -> 0.0).get();
+                };
+
+                protected boolean getFieldRelative() {
+                    return m_fieldOriented.orElse(() -> false).get();
+                };
+            };
+        }
+
+        public DriveCommandBuilder facesTarget(Supplier<Pose2d> pose) {
+            m_faceTarget = Optional.ofNullable(() -> pose.get().getTranslation());
+            return this;
+        }
+
+        public DriveCommandBuilder facesTarget(Pose2d pose) {
+            return facesTarget(() -> pose);
+        }
+
+        public DriveCommandBuilder withSpeedSuppliers(
+                Supplier<Double> xSpeedSupplier,
+                Supplier<Double> ySpeedSupplier,
+                Supplier<Double> rotationSpeedSupplier) {
+            this.m_xSpeedSupplier = Optional.ofNullable(xSpeedSupplier);
+            this.m_ySpeedSupplier = Optional.ofNullable(ySpeedSupplier);
+            this.m_rotationSpeedSupplier = Optional.ofNullable(rotationSpeedSupplier);
+            return this;
+        }
+
+        public DriveCommandBuilder withLinearSpeedSuppliers(
+                Supplier<Double> xSpeedSupplier,
+                Supplier<Double> ySpeedSupplier) {
+            this.m_xSpeedSupplier = Optional.ofNullable(xSpeedSupplier);
+            this.m_ySpeedSupplier = Optional.ofNullable(ySpeedSupplier);
+            return this;
+        }
+
+        public DriveCommandBuilder withRotationSpeedSupplier(
+                Supplier<Double> rotationSpeedSupplier) {
+            this.m_rotationSpeedSupplier = Optional.ofNullable(rotationSpeedSupplier);
+            return this;
+        }
+
+        public DriveCommandBuilder withFieldOriented(Supplier<Boolean> enabled) {
+            this.m_fieldOriented = Optional.ofNullable(enabled);
+            return this;
+        }
+
+        public DriveCommandBuilder withFieldOriented(boolean enabled) {
+            return withFieldOriented(() -> enabled);
+        }
     }
 }

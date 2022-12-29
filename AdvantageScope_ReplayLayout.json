@@ -1,0 +1,90 @@
+{
+  "version": "2.0.0-beta-3",
+  "layout": [
+    {
+      "type": 1,
+      "legends": {
+        "left": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": []
+        },
+        "discrete": {
+          "fields": []
+        },
+        "right": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": []
+        }
+      },
+      "title": "Line Graph"
+    },
+    {
+      "type": 5,
+      "fields": [],
+      "listFields": [
+        [
+          {
+            "type": "Robot",
+            "key": "/RealOutputs/Odometry"
+          },
+          {
+            "type": "Ghost",
+            "key": "/RealOutputs/VisionPose"
+          }
+        ]
+      ],
+      "options": {
+        "game": "2022",
+        "unitDistance": "meters",
+        "unitRotation": "radians",
+        "origin": "right",
+        "size": 0.57,
+        "alliance": "blue",
+        "orientation": "blue left, red right"
+      },
+      "title": "Odometry"
+    },
+    {
+      "type": 6,
+      "fields": [],
+      "listFields": [
+        [
+          {
+            "type": "AprilTag",
+            "key": "/RealOutputs/AprilTag Poses"
+          },
+          {
+            "type": "AprilTag ID",
+            "key": "/RealOutputs/AprilTag ID"
+          }
+        ],
+        [
+          {
+            "type": "Robot",
+            "key": "/RealOutputs/Odometry"
+          },
+          {
+            "type": "Ghost",
+            "key": "/RealOutputs/VisionPose"
+          }
+        ]
+      ],
+      "options": {
+        "field": "2022",
+        "alliance": "blue",
+        "robot": "2713 (Ethan-Giophri-Goblino)",
+        "unitDistance": "meters",
+        "unitRotation": "radians"
+      },
+      "title": "3D Field"
+    }
+  ]
+}

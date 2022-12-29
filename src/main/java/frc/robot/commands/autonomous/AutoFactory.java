@@ -6,14 +6,15 @@ import java.util.Map;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.BaseAutoBuilder;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.commands.debug.DebugCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Camera;
 
@@ -26,6 +27,7 @@ public class AutoFactory {
 
     private final HashMap<String, Command> m_eventMap;
 
+    private String m_selectedAutoName;
     private ArrayList<PathPlannerTrajectory> m_paths;
 
     public AutoFactory(Drive drive, Camera camera) {
@@ -34,16 +36,25 @@ public class AutoFactory {
 
         // Define PathPlanner Event Map
         m_eventMap = new HashMap<String, Command>(Map.of(
-                "PreShoot1", DebugCommands.putSmartDashboardValue(AutoConstants.kAutoStatusKey, "Shooting 1"), // First Shoot Location
-                "PreShoot2", DebugCommands.putSmartDashboardValue(AutoConstants.kAutoStatusKey, "Shooting 2"), // Second Shoot Location
-                "PreLoadStation", DebugCommands.putSmartDashboardValue(AutoConstants.kAutoStatusKey, "Loading Cargo"), // Loading Cargo
-                "PreShoot3", DebugCommands.putSmartDashboardValue(AutoConstants.kAutoStatusKey, "Shooting 3") // Third Shoot Location
+                "a", Commands.print("a"), // First Shoot Location
+                "b", Commands.print("b"), // Second Shoot Location
+                "c", Commands.print("c"), // Loading Cargo
+                "d", Commands.print("d") // Third Shoot Location
         ));
     }
 
     public void loadAutoPathByName(String name) {
+        m_selectedAutoName = name;
+        loadSelectedPathFromFile();
+    }
+
+    public void loadSelectedPathFromFile() {
+        if (m_selectedAutoName == null || m_selectedAutoName.isBlank()) {
+            throw new RuntimeException("Must call 'loadAutoPathByName()' first!");
+        }
+
         m_paths = PathPlanner.loadPathGroup(
-                name,
+                m_selectedAutoName,
                 DriveConstants.kAutoMaxSpeedMetersPerSecond,
                 DriveConstants.kAutoMaxAccelerationMetersPerSecondSq);
     }
@@ -54,7 +65,7 @@ public class AutoFactory {
         }
 
         // Create Auto builder
-        SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+        BaseAutoBuilder autoBuilder = new SwerveAutoBuilder(
                 m_drive::getPose,
                 m_drive::resetPose,
                 m_drive.getChassis().getKinematics(),
