@@ -83,7 +83,7 @@ public class RobotContainer {
 
             Logger.getInstance().recordOutput(
                     "AprilTag Poses",
-                    m_tagLayout.getTags().stream().map(x -> x.pose).toArray(Pose3d[]::new));
+                    m_tagLayout.getTags().stream().map(x -> m_tagLayout.getTagPose(x.ID).get()).toArray(Pose3d[]::new));
         } catch (Exception e) {
             System.out.println("Unable to load apriltag field layout");
         }
@@ -195,7 +195,12 @@ public class RobotContainer {
     private NotSoPeriodic m_cameraNotSoPeriodic;
 
     public void simulationInit() {
+        // Disable joystick warning in simulator
+        DriverStation.silenceJoystickConnectionWarning(true);
+
         m_cameraNotSoPeriodic = new NotSoPeriodic(1);
+
+        // Create simulated vision system
         m_simVision = new SimVisionSystem(
                 VisionConstants.kCameraName,
                 70,

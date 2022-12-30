@@ -79,10 +79,10 @@ public class PoseEstimator {
 
         // Calculate position of camera on field based on observed target position
         Transform3d camToTargetTransform = bestTarget.getBestCameraToTarget();
-        Pose3d cameraPose = targetPose.get().transformBy(camToTargetTransform.inverse());
+        Pose3d estCameraPose = targetPose.get().transformBy(camToTargetTransform.inverse());
 
         // Calculate position of robot on field based on calculated camera position
-        Pose2d visionEstimatedRobotPose = cameraPose.transformBy(VisionConstants.kCameraToRobot).toPose2d();
+        Pose2d visionEstimatedRobotPose = estCameraPose.transformBy(VisionConstants.kCameraToRobot).toPose2d();
 
         // Update pose estimator with vision result
         m_poseEstimator.addVisionMeasurement(visionEstimatedRobotPose, imageCaptureTime);

@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.commands.drive.BaseDriveCommand;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.drive.driver.JoystickDrive;
 import frc.robot.oi.DriverControls;
 import frc.robot.subsystems.drive.chassis.DriveChassis;
@@ -20,6 +22,7 @@ import frc.robot.subsystems.drive.gyro.GyroInputsAutoLogged;
 import frc.robot.subsystems.drive.modules.SwerveModuleIO;
 import frc.robot.subsystems.drive.modules.SwerveModuleInputsAutoLogged;
 import frc.robot.util.FieldUtil;
+import frc.robot.util.GeometryUtils;
 import frc.robot.util.PoseEstimator;
 
 public class Drive extends SubsystemBase {
@@ -58,8 +61,14 @@ public class Drive extends SubsystemBase {
 
         // Update Pose Estimation
         updatePoseEstimation();
+
+        // Log robot position and states
         Logger.getInstance().recordOutput("Odometry", getPose());
         Logger.getInstance().recordOutput("ModuleStates", getModuleStates());
+
+        // Log camera position
+        var cameraPose = getPose3d().transformBy(VisionConstants.kCameraToRobot.inverse());
+        Logger.getInstance().recordOutput("CameraPose", cameraPose);
 
         FieldUtil.getDefaultField().setSwerveRobotPose(getPose(), getChassis());
     }
@@ -121,6 +130,10 @@ public class Drive extends SubsystemBase {
 
     public Pose2d getPose() {
         return m_poseEstimator.getEstimatedPose();
+    }
+
+    public Pose3d getPose3d() {
+        return GeometryUtils.from2dTo3d(getPose());
     }
 
     public Rotation2d getHeading() {

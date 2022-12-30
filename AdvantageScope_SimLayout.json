@@ -1,12 +1,49 @@
 {
-  "version": "2.0.0-beta-1",
+  "version": "2.0.0-beta-3",
   "layout": [
     {
+      "type": 11,
+      "title": "Metadata"
+    },
+    {
+      "type": 1,
+      "legends": {
+        "left": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": []
+        },
+        "discrete": {
+          "fields": []
+        },
+        "right": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": []
+        }
+      },
+      "title": "Line Graph"
+    },
+    {
       "type": 5,
-      "fields": [
-        "/AdvantageKit/RealOutputs/Odometry",
-        null,
-        "/AdvantageKit/RealOutputs/VisionPose"
+      "fields": [],
+      "listFields": [
+        [
+          {
+            "type": "Robot",
+            "key": "/AdvantageKit/RealOutputs/Odometry"
+          },
+          {
+            "type": "Ghost",
+            "key": "/AdvantageKit/RealOutputs/VisionPose"
+          }
+        ]
       ],
       "options": {
         "game": "2022",
@@ -20,29 +57,93 @@
       "title": "Odometry"
     },
     {
-      "type": 8,
+      "type": 6,
       "fields": [],
-      "options": {
-        "ids": [
-          0,
-          1,
-          2
+      "listFields": [
+        [
+          {
+            "type": "AprilTag",
+            "key": "/AdvantageKit/RealOutputs/AprilTag Poses"
+          },
+          {
+            "type": "AprilTag ID",
+            "key": "/AdvantageKit/RealOutputs/AprilTag ID"
+          },
+          {
+            "type": "Camera Override",
+            "key": "/AdvantageKit/RealOutputs/CameraPose"
+          },
+          {
+            "type": "Blue Cone (Front)",
+            "key": "/AdvantageKit/RealOutputs/CameraPose"
+          }
         ],
-        "layouts": [
-          "Xbox Controller (White)",
-          "None",
-          "None"
+        [
+          {
+            "type": "Robot",
+            "key": "/AdvantageKit/RealOutputs/Odometry"
+          },
+          {
+            "type": "Ghost",
+            "key": "/AdvantageKit/RealOutputs/VisionPose"
+          }
         ]
+      ],
+      "options": {
+        "field": "2022",
+        "alliance": "blue",
+        "robot": "2713 (Ethan-Giophri-Goblino)",
+        "unitDistance": "meters",
+        "unitRotation": "radians"
       },
-      "title": "Joysticks"
+      "title": "3D Field"
+    },
+    {
+      "type": 6,
+      "fields": [],
+      "listFields": [
+        [
+          {
+            "type": "AprilTag",
+            "key": "/AdvantageKit/RealOutputs/AprilTag Poses"
+          },
+          {
+            "type": "AprilTag ID",
+            "key": "/AdvantageKit/RealOutputs/AprilTag ID"
+          },
+          {
+            "type": "Camera Override",
+            "key": "/AdvantageKit/RealOutputs/CameraPose"
+          }
+        ],
+        [
+          {
+            "type": "Robot",
+            "key": "/AdvantageKit/RealOutputs/Odometry"
+          },
+          {
+            "type": "Ghost",
+            "key": "/AdvantageKit/RealOutputs/VisionPose"
+          }
+        ]
+      ],
+      "options": {
+        "field": "2022",
+        "alliance": "blue",
+        "robot": "2713 (Ethan-Giophri-Goblino)",
+        "unitDistance": "meters",
+        "unitRotation": "radians"
+      },
+      "title": "Vision"
     },
     {
       "type": 9,
       "fields": [
-        null,
         "/AdvantageKit/RealOutputs/ModuleStates",
-        "/AdvantageKit/RealOutputs/Odometry/2"
+        null,
+        "/AdvantageKit/Drive/Gyro/AngleRads"
       ],
+      "listFields": [],
       "options": {
         "maxSpeed": 4.5,
         "rotationUnits": "radians",
@@ -54,37 +155,22 @@
       "title": "Swerve"
     },
     {
-      "type": 10,
-      "fields": [
-        null,
-        null
-      ],
+      "type": 8,
+      "fields": [],
+      "listFields": [],
       "options": {
-        "width": 960,
-        "height": 720,
-        "group": 0,
-        "pointShape": "plus",
-        "pointSize": "medium"
+        "ids": [
+          0,
+          1,
+          2
+        ],
+        "layouts": [
+          "Xbox Controller (White)",
+          "Xbox Controller (Blue)",
+          "None"
+        ]
       },
-      "title": "Points"
-    },
-    {
-      "type": 4,
-      "fields": [
-        null,
-        null,
-        null
-      ],
-      "selectionType": "full",
-      "selectionRangeMin": 0,
-      "selectionRangeMax": 10,
-      "measurementType": "independent",
-      "measurementSampling": "fixed",
-      "measurementSamplingPeriod": 20,
-      "histogramMin": 0,
-      "histogramMax": 10,
-      "histogramStep": 1,
-      "title": "Statistics"
+      "title": "Joysticks"
     }
   ]
 }
