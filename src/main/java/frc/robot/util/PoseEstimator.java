@@ -69,13 +69,12 @@ public class PoseEstimator {
     private void addCameraMeasurement() {
         var result = m_photonPoseEstimator.update();
 
-        Pose2d estimatedRobotPose = result.getFirst().toPose2d();
-        double latency = result.getSecond();
-
-        if (latency == 0) {
-            System.out.println("No target");
+        if (result.isEmpty()) {
             return;
         }
+
+        Pose2d estimatedRobotPose = result.get().getFirst().toPose2d();
+        double latency = result.get().getSecond();
 
         double timestamp = Timer.getFPGATimestamp() - latency;
 

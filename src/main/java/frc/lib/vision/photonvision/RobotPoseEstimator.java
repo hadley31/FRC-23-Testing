@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -96,38 +97,36 @@ public class RobotPoseEstimator {
      *
      * @return The updated estimated pose and the latency in milliseconds
      */
-    public Pair<Pose3d, Double> update() {
+    public Optional<Pair<Pose3d, Double>> update() {
         if (cameras.isEmpty()) {
             DriverStation.reportError("[RobotPoseEstimator] Missing any camera!", false);
-            return Pair.of(lastPose, 0.);
+            return Optional.empty();
         }
         Pair<Pose3d, Double> pair;
         switch (strategy) {
             case LOWEST_AMBIGUITY:
                 pair = lowestAmbiguityStrategy();
-                lastPose = pair.getFirst();
-                return pair;
+                break;
             case CLOSEST_TO_CAMERA_HEIGHT:
                 pair = closestToCameraHeightStrategy();
-                lastPose = pair.getFirst();
-                return pair;
+                break;
             case CLOSEST_TO_REFERENCE_POSE:
                 pair = closestToReferencePoseStrategy();
-                lastPose = pair.getFirst();
-                return pair;
+                break;
             case CLOSEST_TO_LAST_POSE:
                 referencePose = lastPose;
                 pair = closestToReferencePoseStrategy();
-                lastPose = pair.getFirst();
-                return pair;
+                break;
             case AVERAGE_BEST_TARGETS:
                 pair = averageBestTargetsStrategy();
-                lastPose = pair.getFirst();
-                return pair;
+                break;
             default:
                 DriverStation.reportError("[RobotPoseEstimator] Invalid pose strategy!", false);
-                return Pair.of(lastPose, 0.);
+                return Optional.empty();
         }
+
+        lastPose = pair.getFirst();
+        return Optional.of(pair);
     }
 
     private Pair<Pose3d, Double> lowestAmbiguityStrategy() {
