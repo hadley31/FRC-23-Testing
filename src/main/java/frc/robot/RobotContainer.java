@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
-import org.photonvision.SimPhotonCamera;
 
 import com.revrobotics.REVPhysicsSim;
 
@@ -91,7 +90,7 @@ public class RobotContainer {
 
     private void configureSubsystems() {
         if (RobotBase.isSimulation()) {
-            m_camera = new Camera(new SimPhotonCamera(VisionConstants.kCameraName));
+            m_camera = new Camera(new PhotonCamera(VisionConstants.kCameraName));
             DriveChassis chassis = new CompetitionChassis(
                     new SwerveModuleIO[] {
                             new SwerveModuleIOSim(),

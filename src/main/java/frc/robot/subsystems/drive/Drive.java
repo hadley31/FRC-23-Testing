@@ -22,7 +22,6 @@ import frc.robot.subsystems.drive.gyro.GyroInputsAutoLogged;
 import frc.robot.subsystems.drive.modules.SwerveModuleIO;
 import frc.robot.subsystems.drive.modules.SwerveModuleInputsAutoLogged;
 import frc.robot.util.FieldUtil;
-import frc.robot.util.GeometryUtils;
 import frc.robot.util.PoseEstimator;
 
 public class Drive extends SubsystemBase {
@@ -133,7 +132,7 @@ public class Drive extends SubsystemBase {
     }
 
     public Pose3d getPose3d() {
-        return GeometryUtils.from2dTo3d(getPose());
+        return new Pose3d(getPose());
     }
 
     public Rotation2d getHeading() {

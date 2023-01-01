@@ -47,3 +47,10 @@ classDiagram
     BaseTurnCommand <|-- TurnByAngle
     BaseTurnCommand <|-- TurnToFaceTarget
 ```
+
+## AdvantageScope Notes
+1. In the 3d field, select the `2713 (Ethan-Giophri-Goblino)` robot.
+2. Run this command in the developer console:
+```js
+override3dRobotConfig("2713 (Ethan-Giophri-Goblino)", [{ "axis": "x", "degrees": 0 }, { "axis": "y", "degrees": 0 }, { "axis": "z", "degrees": 90 }], [0, 0, 0])
+```

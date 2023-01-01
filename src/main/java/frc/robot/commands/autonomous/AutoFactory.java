@@ -1,7 +1,7 @@
 package frc.robot.commands.autonomous;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.pathplanner.lib.PathPlanner;
@@ -28,7 +28,7 @@ public class AutoFactory {
     private final HashMap<String, Command> m_eventMap;
 
     private String m_selectedAutoName;
-    private ArrayList<PathPlannerTrajectory> m_paths;
+    private List<PathPlannerTrajectory> m_paths;
 
     public AutoFactory(Drive drive, Camera camera) {
         m_drive = drive;

@@ -1,5 +1,9 @@
 package frc.robot.util;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -106,5 +110,12 @@ public class GeometryUtils {
         var pitchRot = new Rotation3d(0, pitch, 0);
 
         return yawRot.rotateBy(pitchRot);
+    }
+
+    public static Map<Integer, Pose3d> aprilTagPoseMap(AprilTagFieldLayout layout) {
+        return layout.getTags().stream()
+                .collect(Collectors.toMap(
+                        x -> x.ID,
+                        x -> layout.getTagPose(x.ID).orElseThrow()));
     }
 }

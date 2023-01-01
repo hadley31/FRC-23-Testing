@@ -1,10 +1,12 @@
 package frc.robot.util;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,12 +17,15 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import frc.lib.vision.photonvision.RobotPoseEstimator;
+import frc.lib.vision.photonvision.RobotPoseEstimator.PoseStrategy;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.drive.chassis.DriveChassis;
 import frc.robot.subsystems.vision.Camera;
 
 public class PoseEstimator {
     private final SwerveDrivePoseEstimator m_poseEstimator;
+    private final RobotPoseEstimator m_photonPoseEstimator;
     private final Camera m_camera;
     private final AprilTagFieldLayout m_tagLayout;
 
@@ -38,6 +43,11 @@ public class PoseEstimator {
                 new Pose2d(),
                 VecBuilder.fill(Units.degreesToRadians(0.01), 0.01, 0.01),
                 VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+
+        var aprilTagPoseMap = GeometryUtils.aprilTagPoseMap(tagLayout);
+        var cameras = List.of(Pair.of(camera.getPhotonCamera(), VisionConstants.kCameraToRobot));
+
+        m_photonPoseEstimator = new RobotPoseEstimator(aprilTagPoseMap, PoseStrategy.CLOSEST_TO_LAST_POSE, cameras);
         m_camera = camera;
         m_tagLayout = tagLayout;
     }
@@ -53,9 +63,28 @@ public class PoseEstimator {
 
     public void resetPose(Pose2d pose, Rotation2d gyroAngle, SwerveModulePosition[] modulePositions) {
         m_poseEstimator.resetPosition(gyroAngle, modulePositions, pose);
+        m_photonPoseEstimator.setLastPose(new Pose3d(pose));
     }
 
     private void addCameraMeasurement() {
+        var result = m_photonPoseEstimator.update();
+
+        Pose2d estimatedRobotPose = result.getFirst().toPose2d();
+        double latency = result.getSecond();
+
+        if (latency == 0) {
+            System.out.println("No target");
+            return;
+        }
+
+        double timestamp = Timer.getFPGATimestamp() - latency;
+
+        Logger.getInstance().recordOutput("VisionEstRobotPose", estimatedRobotPose);
+
+        m_poseEstimator.addVisionMeasurement(estimatedRobotPose, timestamp);
+    }
+
+    private void old_addCameraMeasurement() {
         var latestResult = m_camera.getLatestResult();
 
         if (!latestResult.hasTargets()) {

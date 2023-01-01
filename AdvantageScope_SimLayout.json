@@ -6,6 +6,11 @@
       "title": "Metadata"
     },
     {
+      "type": 3,
+      "field": "/AdvantageKit/RealOutputs/Console",
+      "title": "Console"
+    },
+    {
       "type": 1,
       "legends": {
         "left": {
@@ -74,7 +79,7 @@
             "key": "/AdvantageKit/RealOutputs/CameraPose"
           },
           {
-            "type": "Blue Cone (Front)",
+            "type": "Axes",
             "key": "/AdvantageKit/RealOutputs/CameraPose"
           }
         ],

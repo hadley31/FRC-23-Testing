@@ -56,6 +56,10 @@ public class Camera extends SubsystemBase {
         return m_latestResult;
     }
 
+    public PhotonCamera getPhotonCamera() {
+        return m_camera;
+    }
+
     //#region Commands
 
     public CommandBase setPipelineIndexCommand(int index) {
