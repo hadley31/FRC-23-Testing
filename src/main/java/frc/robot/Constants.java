@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -183,8 +184,14 @@ public final class Constants {
     public static class AutoConstants {
         public static final String kAutoStatusKey = "Auto Status";
 
+        public static final String kTwoBallAuto = "2 Ball Auto";
+        public static final String kThreeBallAuto = "3 Ball Auto";
         public static final String kFiveBallAuto = "5 Ball Auto";
-        public static final String kTestAuto = "Test Auto";
-        public static final String kDefaultAuto = kFiveBallAuto;
+        public static final String kDefaultAuto = kTwoBallAuto;
+
+        public static final List<String> kAutoNames = List.of(
+                kTwoBallAuto,
+                kThreeBallAuto,
+                kFiveBallAuto);
     }
 }

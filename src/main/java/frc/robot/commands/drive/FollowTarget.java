@@ -29,19 +29,19 @@ public abstract class FollowTarget extends CommandBase {
     }
 
     private ChassisSpeeds getSpeeds() {
-        Optional<Pose2d> tagPose = getTargetPose();
+        Optional<Pose2d> targetPose = getTargetPose();
 
-        SmartDashboard.putBoolean("FollowTarget/TagVisible", tagPose.isPresent());
+        SmartDashboard.putBoolean("FollowTarget/IsVisible", targetPose.isPresent());
 
-        if (tagPose.isEmpty()) {
+        if (targetPose.isEmpty()) {
             return new ChassisSpeeds();
         }
 
-        SmartDashboard.putNumber("FollowTarget/TagPoseX", tagPose.get().getX());
-        SmartDashboard.putNumber("FollowTarget/TagPoseY", tagPose.get().getY());
-        SmartDashboard.putNumber("FollowTarget/TagPoseDegrees", tagPose.get().getRotation().getDegrees());
+        SmartDashboard.putNumber("FollowTarget/PoseX", targetPose.get().getX());
+        SmartDashboard.putNumber("FollowTarget/PoseY", targetPose.get().getY());
+        SmartDashboard.putNumber("FollowTarget/PoseDegrees", targetPose.get().getRotation().getDegrees());
 
-        Pose2d desiredPose = tagPose.get().transformBy(m_desiredOffset);
+        Pose2d desiredPose = targetPose.get().transformBy(m_desiredOffset);
 
         var twist = m_drive.getPose().log(desiredPose);
 

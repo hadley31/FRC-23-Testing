@@ -25,12 +25,6 @@ public abstract class BaseDriveCommand extends CommandBase {
         addRequirements(drive);
     }
 
-    // Called when the command is initially scheduled.
-    @Override
-    public void initialize() {
-    }
-
-    // Called every time the scheduler runs while the command is scheduled.
     @Override
     public final void execute() {
         double x = getXSpeed();
@@ -45,8 +39,8 @@ public abstract class BaseDriveCommand extends CommandBase {
     /**
     * Combines all returned movement values to create output chassis ChassisSpeeds
     * Putting this logic in its own method allows {@link DriveCommandWrapper}s to
-    * modify the late stage chassis speeds being sent to the drive command
-    * Do <strong>NOT</strong> override this method unless you know what you are doing!
+    * modify the late stage chassis speeds being sent to the drive command.
+    * <strong>DO NOT</strong> override this method unless you know what you are doing!
     * @return the desired robot chassis speeds
     */
     protected ChassisSpeeds getChassisSpeeds(double x, double y, double omega, boolean isFieldRelative) {

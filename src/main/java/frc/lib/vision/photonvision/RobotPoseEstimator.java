@@ -124,9 +124,10 @@ public class RobotPoseEstimator {
                 DriverStation.reportError("[RobotPoseEstimator] Invalid pose strategy!", false);
                 return Optional.empty();
         }
-
-        lastPose = pair.getFirst();
-        return Optional.of(pair);
+        if (pair != null) {
+            lastPose = pair.getFirst();
+        }
+        return Optional.ofNullable(pair);
     }
 
     private Pair<Pose3d, Double> lowestAmbiguityStrategy() {
@@ -148,7 +149,7 @@ public class RobotPoseEstimator {
 
         // No targets, return the last pose
         if (lowestAI == -1 || lowestAJ == -1) {
-            return Pair.of(lastPose, 0.);
+            return null;
         }
 
         // Pick the lowest and do the heavy calculations
@@ -163,7 +164,7 @@ public class RobotPoseEstimator {
                         false);
                 reportedErrors.add(bestTarget.getFiducialId());
             }
-            return Pair.of(lastPose, 0.);
+            return null;
         }
 
         return Pair.of(
@@ -222,7 +223,7 @@ public class RobotPoseEstimator {
             DriverStation.reportError(
                     "[RobotPoseEstimator] Tried to use reference pose strategy without setting the reference!",
                     false);
-            return Pair.of(lastPose, 0.);
+            return null;
         }
         double smallestDifference = 10e9;
         double mili = 0;

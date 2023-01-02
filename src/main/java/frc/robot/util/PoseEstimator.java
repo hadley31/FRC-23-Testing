@@ -1,7 +1,6 @@
 package frc.robot.util;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -12,7 +11,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -47,7 +45,7 @@ public class PoseEstimator {
         var aprilTagPoseMap = GeometryUtils.aprilTagPoseMap(tagLayout);
         var cameras = List.of(Pair.of(camera.getPhotonCamera(), VisionConstants.kCameraToRobot));
 
-        m_photonPoseEstimator = new RobotPoseEstimator(aprilTagPoseMap, PoseStrategy.CLOSEST_TO_LAST_POSE, cameras);
+        m_photonPoseEstimator = new RobotPoseEstimator(aprilTagPoseMap, PoseStrategy.LOWEST_AMBIGUITY, cameras);
         m_camera = camera;
         m_tagLayout = tagLayout;
     }
@@ -78,44 +76,9 @@ public class PoseEstimator {
 
         double timestamp = Timer.getFPGATimestamp() - latency;
 
+        FieldUtil.getDefaultField().setObjectPose("VisionEstRobotPose", estimatedRobotPose);
         Logger.getInstance().recordOutput("VisionEstRobotPose", estimatedRobotPose);
 
         m_poseEstimator.addVisionMeasurement(estimatedRobotPose, timestamp);
-    }
-
-    private void old_addCameraMeasurement() {
-        var latestResult = m_camera.getLatestResult();
-
-        if (!latestResult.hasTargets()) {
-            // We found no targets so don't add any pose estimate
-            return;
-        }
-
-        // Calculate when the image was taken using latency
-        double imageCaptureTime = Timer.getFPGATimestamp() - latestResult.getLatencyMillis();
-
-        var bestTarget = latestResult.getBestTarget();
-
-        int fiducialId = bestTarget.getFiducialId();
-
-        Optional<Pose3d> targetPose = m_tagLayout.getTagPose(fiducialId);
-
-        if (targetPose.isEmpty()) {
-            // We found a target and we didn't store where it is, so don't add any pose estimate
-            return;
-        }
-
-        // Calculate position of camera on field based on observed target position
-        Transform3d camToTargetTransform = bestTarget.getBestCameraToTarget();
-        Pose3d estCameraPose = targetPose.get().transformBy(camToTargetTransform.inverse());
-
-        // Calculate position of robot on field based on calculated camera position
-        Pose2d visionEstimatedRobotPose = estCameraPose.transformBy(VisionConstants.kCameraToRobot).toPose2d();
-
-        // Update pose estimator with vision result
-        m_poseEstimator.addVisionMeasurement(visionEstimatedRobotPose, imageCaptureTime);
-
-        FieldUtil.getDefaultField().setObjectPose("CameraEstimatedPose", visionEstimatedRobotPose);
-        Logger.getInstance().recordOutput("VisionPose", visionEstimatedRobotPose);
     }
 }

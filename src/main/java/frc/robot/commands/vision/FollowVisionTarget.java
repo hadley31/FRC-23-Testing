@@ -8,17 +8,24 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.drive.FollowTarget;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Camera;
-import frc.robot.util.GeometryUtils;
 
 public class FollowVisionTarget extends FollowTarget {
     private final Camera m_camera;
-    private final int m_fiducialId;
+    private final Optional<Integer> m_fiducialId;
 
-    public FollowVisionTarget(Drive drive, Camera camera, Transform2d desiredOffset, int fiducialId) {
+    private FollowVisionTarget(Drive drive, Camera camera, Transform2d desiredOffset, Optional<Integer> fiducialId) {
         super(drive, desiredOffset);
 
         m_camera = camera;
         m_fiducialId = fiducialId;
+    }
+
+    public FollowVisionTarget(Drive drive, Camera camera, Transform2d desiredOffset) {
+        this(drive, camera, desiredOffset, Optional.empty());
+    }
+
+    public FollowVisionTarget(Drive drive, Camera camera, Transform2d desiredOffset, int fiducialId) {
+        this(drive, camera, desiredOffset, Optional.of(fiducialId));
     }
 
     @Override
@@ -31,15 +38,16 @@ public class FollowVisionTarget extends FollowTarget {
 
         var bestTarget = latestResult.getBestTarget();
 
-        if (bestTarget.getFiducialId() != m_fiducialId) {
+        if (m_fiducialId.isPresent() && bestTarget.getFiducialId() != m_fiducialId.get()) {
             return Optional.empty();
         }
 
         var bestOffset = latestResult.getBestTarget().getBestCameraToTarget();
 
-        var tagPose = GeometryUtils.from2dTo3d(m_drive.getPose()).transformBy(VisionConstants.kCameraToRobot.inverse())
-                .transformBy(bestOffset);
+        var targetPose = m_drive.getPose3d()
+                .transformBy(VisionConstants.kCameraToRobot.inverse()) // to camera's pose
+                .transformBy(bestOffset); // to target's pose
 
-        return Optional.of(tagPose.toPose2d());
+        return Optional.of(targetPose.toPose2d());
     }
 }

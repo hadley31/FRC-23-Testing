@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.BaseAutoBuilder;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -50,13 +51,20 @@ public class AutoFactory {
 
     public void loadSelectedPathFromFile() {
         if (m_selectedAutoName == null || m_selectedAutoName.isBlank()) {
-            throw new RuntimeException("Must call 'loadAutoPathByName()' first!");
+            DriverStation.reportWarning("Unable to load pathplanner path. No auto selected!", false);
+            return;
         }
+
+        System.out.println("Loading path: " + m_selectedAutoName);
 
         m_paths = PathPlanner.loadPathGroup(
                 m_selectedAutoName,
                 DriveConstants.kAutoMaxSpeedMetersPerSecond,
                 DriveConstants.kAutoMaxAccelerationMetersPerSecondSq);
+
+        if (m_paths == null) {
+            DriverStation.reportError("Failed to load path!", false);
+        }
     }
 
     public CommandBase getAutoCommand() {

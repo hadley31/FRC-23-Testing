@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.HashMap;
 
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
 
 import com.revrobotics.REVPhysicsSim;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.listeners.ChangeNotifier;
 import frc.lib.vision.photonvision.SimVisionSystem;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ElectricalConstants;
@@ -57,6 +59,7 @@ public class RobotContainer {
 
     private AprilTagFieldLayout m_tagLayout;
     private AutoFactory m_autoFactory;
+    private LoggedDashboardChooser<String> m_autoChooser;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -165,8 +168,19 @@ public class RobotContainer {
      */
     public void configureAuto() {
         m_autoFactory = new AutoFactory(m_drive, m_camera);
+        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser");
 
-        // TODO: add auto ui selector
+        // Configure Auto Chooser Options
+        AutoConstants.kAutoNames.forEach(name -> m_autoChooser.addOption(name, name));
+        m_autoChooser.addDefaultOption(AutoConstants.kDefaultAuto, AutoConstants.kDefaultAuto);
+
+        ChangeNotifier.of(m_autoChooser::get)
+                .addListener(x -> {
+                    System.out.println("Loading auto: " + x);
+                    m_autoFactory.loadAutoPathByName(x);
+                });
+
+        // Load the default auto
         m_autoFactory.loadAutoPathByName(AutoConstants.kDefaultAuto);
     }
 
