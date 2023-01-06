@@ -1,11 +1,11 @@
 package frc.robot.subsystems.vision;
 
-import org.photonvision.PhotonCamera;
 import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.vision.photonvision.PhotonCamera;
 import frc.robot.Constants.VisionConstants;
 
 public class Camera extends SubsystemBase {

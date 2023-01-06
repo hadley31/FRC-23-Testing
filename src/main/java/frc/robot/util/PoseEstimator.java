@@ -42,10 +42,9 @@ public class PoseEstimator {
                 VecBuilder.fill(Units.degreesToRadians(0.01), 0.01, 0.01),
                 VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
-        var aprilTagPoseMap = GeometryUtils.aprilTagPoseMap(tagLayout);
-        var cameras = List.of(Pair.of(camera.getPhotonCamera(), VisionConstants.kCameraToRobot));
+        var cameras = List.of(Pair.of(camera.getPhotonCamera(), VisionConstants.kCameraToRobot.inverse()));
 
-        m_photonPoseEstimator = new RobotPoseEstimator(aprilTagPoseMap, PoseStrategy.LOWEST_AMBIGUITY, cameras);
+        m_photonPoseEstimator = new RobotPoseEstimator(tagLayout, PoseStrategy.LOWEST_AMBIGUITY, cameras);
         m_camera = camera;
         m_tagLayout = tagLayout;
     }
