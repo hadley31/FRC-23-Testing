@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.photonvision.SimVisionSystem;
 
 import com.revrobotics.REVPhysicsSim;
 
@@ -24,7 +25,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.listeners.ChangeNotifier;
 import frc.lib.vision.photonvision.PhotonCamera;
-import frc.lib.vision.photonvision.SimVisionSystem;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ElectricalConstants;
 import frc.robot.Constants.VisionConstants;
