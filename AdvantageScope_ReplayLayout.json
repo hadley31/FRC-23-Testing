@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0-beta-3",
+  "version": "2.0.0",
   "layout": [
     {
       "type": 1,
@@ -79,12 +79,12 @@
           },
           {
             "type": "Ghost",
-            "key": "/RealOutputs/VisionPose"
+            "key": "/RealOutputs/VisionEstRobotPose"
           }
         ]
       ],
       "options": {
-        "game": "2022",
+        "game": "2023",
         "unitDistance": "meters",
         "unitRotation": "radians",
         "origin": "right",
@@ -151,14 +151,14 @@
           },
           {
             "type": "Ghost",
-            "key": "/RealOutputs/VisionPose"
+            "key": "/RealOutputs/VisionEstRobotPose"
           }
         ]
       ],
       "options": {
-        "field": "2022",
+        "field": "2023",
         "alliance": "blue",
-        "robot": "2713 (Ethan-Giophri-Goblino)",
+        "robot": "Bot-Bot Awakens (6328)",
         "unitDistance": "meters",
         "unitRotation": "radians"
       },

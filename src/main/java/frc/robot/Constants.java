@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.pathplanner.PathPlannerUtil;
 import frc.robot.util.GeometryUtils;
 
 /**
@@ -29,24 +30,11 @@ import frc.robot.util.GeometryUtils;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final Mode currentMode = Mode.SIM;
-
-    public static enum Mode {
-        /** Running on a real robot. */
-        REAL,
-
-        /** Running a physics simulator. */
-        SIM,
-
-        /** Replaying from a log file. */
-        REPLAY
-    }
-
     public static final double kLoopTime = 0.02;
     public static final double HALF_PI = Math.PI / 2;
     public static final double TWO_PI = 2 * Math.PI;
     public static final boolean kTuningMode = true;
-    public static final String kAprilTagFieldLayoutFilename = "2022-taglayout.json";
+    public static final String kAprilTagFieldLayoutFilename = "2023-taglayout.json";
     public static final Trigger kEmptyTrigger = new Trigger(() -> false);
 
     public static final class BuildConstants {
@@ -184,14 +172,21 @@ public final class Constants {
     public static class AutoConstants {
         public static final String kAutoStatusKey = "Auto Status";
 
-        public static final String kTwoBallAuto = "2 Ball Auto";
-        public static final String kThreeBallAuto = "3 Ball Auto";
-        public static final String kFiveBallAuto = "5 Ball Auto";
-        public static final String kDefaultAuto = kTwoBallAuto;
+        public static final String kRightConeCone = "Right Cone Cone";
+        public static final String kRightCubeCone = "Right Cone Cone";
+        public static final String kFiveBallAuto = "";
+        public static final String kDefaultAuto = kRightConeCone;
 
-        public static final List<String> kAutoNames = List.of(
-                kTwoBallAuto,
-                kThreeBallAuto,
-                kFiveBallAuto);
+        public static final List<String> kAutoNames = PathPlannerUtil.getExistingPaths();
+
+        // public static final List<String> kAutoNames = List.of(
+        //         kRightConeCone,
+        //         kRightCubeCone,
+        //         kFiveBallAuto);
+    }
+
+    public static class LoggingConstants {
+        public static final String kAprilTagPoses = "AprilTag Poses";
+        public static final String kAprilTagIds = "AprilTag ID";
     }
 }

@@ -69,7 +69,13 @@ public class AutoFactory {
 
     public CommandBase getAutoCommand() {
         if (m_paths == null) {
+            DriverStation.reportWarning("No auto path selected... Loading default auto.", false);
             loadAutoPathByName(AutoConstants.kDefaultAuto);
+
+            if (m_paths == null) {
+                DriverStation.reportError("Loading default auto failed. Doing nothing.", false);
+                return Commands.none();
+            }
         }
 
         // Create Auto builder

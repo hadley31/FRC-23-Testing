@@ -3,12 +3,10 @@ package frc.robot.subsystems.drive.gyro;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 
-public class GyroIOWPIWrapper implements GyroIO {
-    private Gyro m_gyro;
+public abstract class GyroIOWPI implements GyroIO {
     private Rotation2d m_offset;
 
-    public GyroIOWPIWrapper(Gyro gyro) {
-        m_gyro = gyro;
+    public GyroIOWPI() {
         m_offset = Rotation2d.fromDegrees(0);
     }
 
@@ -20,13 +18,11 @@ public class GyroIOWPIWrapper implements GyroIO {
     }
 
     @Override
-    public Gyro getWPIGyro() {
-        return m_gyro;
-    }
+    public abstract Gyro getWPIGyro();
 
     @Override
     public Rotation2d getRawGyroAngle() {
-        return m_gyro.getRotation2d();
+        return getWPIGyro().getRotation2d();
     }
 
     @Override
@@ -36,7 +32,7 @@ public class GyroIOWPIWrapper implements GyroIO {
 
     @Override
     public double getRate() {
-        return m_gyro.getRate();
+        return getWPIGyro().getRate();
     }
 
     @Override
@@ -46,7 +42,7 @@ public class GyroIOWPIWrapper implements GyroIO {
 
     @Override
     public void reset(Rotation2d offset) {
-        m_gyro.reset();
+        getWPIGyro().reset();
         m_offset = offset;
     }
 

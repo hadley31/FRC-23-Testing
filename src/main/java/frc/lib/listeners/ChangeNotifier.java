@@ -11,7 +11,7 @@ public class ChangeNotifier<T> extends BaseChangeNotifier {
     private T m_currentValue;
     private T m_previousValue;
 
-    private ChangeNotifier(Supplier<T> value) {
+    protected ChangeNotifier(Supplier<T> value) {
         m_supplier = value;
         m_consumers = new ArrayList<>();
 
@@ -41,5 +41,13 @@ public class ChangeNotifier<T> extends BaseChangeNotifier {
 
     public static <T> ChangeNotifier<T> of(Supplier<T> value) {
         return new ChangeNotifier<>(value);
+    }
+
+    public static <T> ChangeNotifier<T> ofLogged(String key, Supplier<T> value) {
+        return new LoggedChangeNotifier<>(key, value);
+    }
+
+    public T getValue() {
+        return m_currentValue;
     }
 }

@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.HashMap;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.SimVisionSystem;
@@ -27,11 +25,10 @@ import frc.lib.listeners.ChangeNotifier;
 import frc.lib.vision.photonvision.PhotonCamera;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ElectricalConstants;
+import frc.robot.Constants.LoggingConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.autonomous.AutoFactory;
 import frc.robot.commands.debug.DebugCommands;
-import frc.robot.commands.debug.DriveBoundary;
-import frc.robot.commands.debug.DriveBoundary.Bounds;
 import frc.robot.oi.DriverControls;
 import frc.robot.oi.DriverXboxControls;
 import frc.robot.subsystems.drive.Drive;
@@ -63,32 +60,37 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        configureAprilTags(DriverStation.getAlliance());
+        configureAprilTags();
         configureSubsystems();
         configureButtonBindings();
         configureAuto();
     }
 
-    private void configureAprilTags(Alliance alliance) {
+    private void configureAprilTags() {
         try {
-            System.out.printf("Setting apriltag positions using %s alliance.\n", alliance);
-            var originPosition = alliance == Alliance.Red
-                    ? OriginPosition.kRedAllianceWallRightSide
-                    : OriginPosition.kBlueAllianceWallRightSide;
-
             m_tagLayout = new AprilTagFieldLayout(Constants.kAprilTagFieldLayoutFilename);
-            m_tagLayout.setOrigin(originPosition);
+            setAprilTagAlliance(DriverStation.getAlliance());
+
+            ChangeNotifier.of(DriverStation::getAlliance).addListener(this::setAprilTagAlliance);
 
             Logger.getInstance().recordOutput(
-                    "AprilTag ID",
+                    LoggingConstants.kAprilTagIds,
                     m_tagLayout.getTags().stream().mapToLong(x -> x.ID).toArray());
-
-            Logger.getInstance().recordOutput(
-                    "AprilTag Poses",
-                    m_tagLayout.getTags().stream().map(x -> m_tagLayout.getTagPose(x.ID).get()).toArray(Pose3d[]::new));
         } catch (Exception e) {
             System.out.println("Unable to load apriltag field layout");
         }
+    }
+
+    private void setAprilTagAlliance(Alliance alliance) {
+        System.out.printf("Setting apriltag positions using %s alliance.\n", alliance);
+        var originPosition = alliance == Alliance.Red
+                ? OriginPosition.kRedAllianceWallRightSide
+                : OriginPosition.kBlueAllianceWallRightSide;
+        m_tagLayout.setOrigin(originPosition);
+
+        Logger.getInstance().recordOutput(
+                LoggingConstants.kAprilTagPoses,
+                m_tagLayout.getTags().stream().map(x -> m_tagLayout.getTagPose(x.ID).get()).toArray(Pose3d[]::new));
     }
 
     private void configureSubsystems() {
@@ -145,17 +147,8 @@ public class RobotContainer {
 
         // OperatorControls operatorControls = new OperatorXboxControls(2);
 
-        var driveBounds = new Bounds(2, 2, 6, 4);
-        var boundedJoystickDriveCommand = new DriveBoundary(
-                m_drive.driveCommand(driverControls),
-                driveBounds);
-
         // Define subsystem default commands
-        m_drive.setDefaultCommand(boundedJoystickDriveCommand);
-
-        // Define Driver Control Mappings
-        driverControls.getRobotRelativeDriveMode()
-                .whileTrue(boundedJoystickDriveCommand.withFieldRelative(false));
+        m_drive.setDefaultCommand(m_drive.driveCommand(driverControls));
 
         // Define Operator Control Mappings
         // operatorControls.getExampleControl().whenActive(new PrintCommand("Operator did a thing!"));
@@ -169,6 +162,8 @@ public class RobotContainer {
     public void configureAuto() {
         m_autoFactory = new AutoFactory(m_drive, m_camera);
         m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser");
+
+        System.out.println(AutoConstants.kAutoNames);
 
         // Configure Auto Chooser Options
         AutoConstants.kAutoNames.forEach(name -> m_autoChooser.addOption(name, name));
@@ -217,19 +212,18 @@ public class RobotContainer {
         m_simVision = new SimVisionSystem(
                 VisionConstants.kCameraName,
                 70,
-                VisionConstants.kCameraToRobot,
+                VisionConstants.kCameraToRobot.inverse(),
                 Units.feetToMeters(15),
                 640, 480,
                 1.0);
         m_simVision.addVisionTargets(m_tagLayout);
 
-        HashMap<String, Pose3d> tags = new HashMap<>();
-        for (var tag : m_tagLayout.getTags()) {
-            tags.put("AprilTag_" + tag.ID, tag.pose);
-        }
+        Pose2d[] tagPoseList = m_tagLayout.getTags()
+                .stream()
+                .map(x -> x.pose.toPose2d())
+                .toArray(Pose2d[]::new);
 
-        FieldUtil.getDefaultField().setObjectPoses("AprilTags",
-                tags.values().stream().map(x -> x.toPose2d()).toArray(Pose2d[]::new));
+        FieldUtil.getDefaultField().setObjectPoses("AprilTags", tagPoseList);
     }
 
     public void simulationPeriodic() {
