@@ -8,9 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -111,8 +109,8 @@ public final class Constants {
     }
 
     public static final class FieldConstants {
-        public static final double kFieldWidthMeters = 16.46;
-        public static final double kFieldHeightMeters = 8.23;
+        public static final double kFieldWidthMeters = 16.5417;
+        public static final double kFieldHeightMeters = 8.0137;
 
         public static final Pose3d kOppositeField = new Pose3d(kFieldWidthMeters, kFieldHeightMeters, 0,
                 new Rotation3d(0, 0, Units.degreesToRadians(180)));
@@ -120,11 +118,6 @@ public final class Constants {
         public static Pose3d getFieldMirroredPose(Pose3d pose) {
             return kOppositeField.transformBy(GeometryUtils.poseToTransform(pose));
         }
-
-        public static final double kHubXPos = kFieldWidthMeters / 2;
-        public static final double kHubYPos = kFieldHeightMeters / 2;
-        public static final Pose3d kHubPose = GeometryUtils.from2dTo3d(new Pose2d(
-                kHubXPos, kHubYPos, Rotation2d.fromDegrees(24)));
     }
 
     public static class VisionConstants {
@@ -172,12 +165,8 @@ public final class Constants {
     public static class AutoConstants {
         public static final String kAutoStatusKey = "Auto Status";
 
-        public static final String kRightConeCone = "Right Cone Cone";
-        public static final String kRightCubeCone = "Right Cone Cone";
-        public static final String kFiveBallAuto = "";
-        public static final String kDefaultAuto = kRightConeCone;
-
         public static final List<String> kAutoNames = PathPlannerUtil.getExistingPaths();
+        public static final String kDefaultAuto = kAutoNames.get(0);
 
         // public static final List<String> kAutoNames = List.of(
         //         kRightConeCone,

@@ -3,6 +3,7 @@ package frc.lib.commands.drive;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
 
 public abstract class TargetAngleDrive extends DriveCommandAdapter {
@@ -21,7 +22,7 @@ public abstract class TargetAngleDrive extends DriveCommandAdapter {
 
     @Override
     protected final double getRotationSpeed() {
-        Rotation2d currentRotation = m_drive.getPose().getRotation();
+        Rotation2d currentRotation = RobotState.getInstance().getRobotPose().getRotation();
         Rotation2d desiredRotation = getDesiredAngle();
 
         return m_controller.calculate(currentRotation.getRadians(), desiredRotation.getRadians());

@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.drive.chassis.DriveChassis;
 
 public class FieldUtil {
@@ -37,24 +39,24 @@ public class FieldUtil {
         for (var entry : objects.entrySet()) {
             String objectName = entry.getKey();
             Pose2d objectPose = entry.getValue();
-            field.getObject(objectName).setPose(objectPose);
+            setObjectPose(objectName, objectPose);
         }
     }
 
-    public void setObjects3d(Map<String, Pose3d> objects) {
-        for (var entry : objects.entrySet()) {
-            String objectName = entry.getKey();
-            Pose2d objectPose = entry.getValue().toPose2d();
-            field.getObject(objectName).setPose(objectPose);
-        }
-    }
-
-    public void setObjectPose(String name, Pose2d pose) {
+    public void setObjectGlobalPose(String name, Pose2d pose) {
         field.getObject(name).setPose(pose);
     }
 
-    public void setObjectPoses(String name, Pose2d... poses) {
+    public void setObjectPose(String name, Pose2d pose) {
+        setObjectGlobalPose(name, transformPose(pose));
+    }
+
+    public void setObjectGlobalPoses(String name, Pose2d... poses) {
         field.getObject(name).setPoses(poses);
+    }
+
+    public void setObjectPoses(String name, Pose2d... poses) {
+        setObjectGlobalPoses(name, transformPoses(poses));
     }
 
     public void setTrajectory(String name, Trajectory trajectory) {
@@ -62,7 +64,7 @@ public class FieldUtil {
     }
 
     public void updateRobotPose(Pose2d pose) {
-        field.setRobotPose(pose);
+        field.setRobotPose(transformPose(pose));
     }
 
     public void setSwerveRobotPose(Pose2d pose, DriveChassis chassis) {
@@ -89,5 +91,22 @@ public class FieldUtil {
 
     public void removeObject(String name) {
         field.getObject(name).setPoses();
+    }
+
+    private Pose2d[] transformPoses(Pose2d[] poses) {
+        Pose2d[] result = new Pose2d[poses.length];
+        for (int i = 0; i < poses.length; i++) {
+            result[i] = transformPose(poses[i]);
+        }
+
+        return result;
+    }
+
+    private Pose2d transformPose(Pose2d pose) {
+        if (DriverStation.getAlliance() == Alliance.Blue) {
+            return pose;
+        }
+
+        return pose.relativeTo(FieldConstants.kOppositeField.toPose2d());
     }
 }

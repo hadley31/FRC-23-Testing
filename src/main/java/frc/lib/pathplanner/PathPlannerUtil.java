@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 import edu.wpi.first.wpilibj.Filesystem;
 
 public class PathPlannerUtil {
-
     public static List<String> getExistingPaths() {
         var path = Path.of(Filesystem.getDeployDirectory().getAbsolutePath(), "pathplanner");
         try (Stream<Path> stream = Files.walk(path)) {

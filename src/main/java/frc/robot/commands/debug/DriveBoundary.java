@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.lib.commands.drive.BaseDriveCommand;
 import frc.lib.commands.drive.DriveCommandWrapper;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.RobotState;
 import frc.robot.util.FieldUtil;
 
 public final class DriveBoundary extends DriveCommandWrapper {
@@ -90,7 +91,7 @@ public final class DriveBoundary extends DriveCommandWrapper {
     protected ChassisSpeeds getChassisSpeeds(double x, double y, double omega,
             boolean isFieldRelative) {
         ChassisSpeeds speeds = super.getChassisSpeeds(x, y, omega, isFieldRelative);
-        Pose2d pose = m_drive.getPose();
+        Pose2d pose = RobotState.getInstance().getRobotPose();
 
         // Convert chassis speeds to field relative
         speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, pose.getRotation().unaryMinus());

@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
 
 /** 
@@ -45,7 +46,8 @@ public abstract class BaseDriveCommand extends CommandBase {
     */
     protected ChassisSpeeds getChassisSpeeds(double x, double y, double omega, boolean isFieldRelative) {
         return isFieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(x, y, omega, m_drive.getPose().getRotation())
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(x, y, omega,
+                        RobotState.getInstance().getRobotPose().getRotation())
                 : new ChassisSpeeds(x, y, omega);
     }
 

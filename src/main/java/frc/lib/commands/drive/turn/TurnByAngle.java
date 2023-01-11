@@ -1,6 +1,7 @@
 package frc.lib.commands.drive.turn;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
 
 public class TurnByAngle extends BaseTurnCommand {
@@ -14,7 +15,7 @@ public class TurnByAngle extends BaseTurnCommand {
 
     @Override
     public void initialize() {
-        m_desiredRobotAngle = m_drive.getPose().getRotation().plus(m_inputTurnAngle);
+        m_desiredRobotAngle = RobotState.getInstance().getRobotPose().getRotation().plus(m_inputTurnAngle);
     }
 
     @Override

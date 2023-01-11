@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.commands.generic_drive.BaseDriveCommand;
+import frc.lib.commands.generic_drive.DriveCommandConfig;
 import frc.lib.listeners.ChangeNotifier;
 import frc.lib.vision.photonvision.PhotonCamera;
 import frc.robot.Constants.AutoConstants;
@@ -38,10 +40,11 @@ import frc.robot.subsystems.drive.gyro.PigeonIO;
 import frc.robot.subsystems.drive.modules.SwerveModuleIO;
 import frc.robot.subsystems.drive.modules.SwerveModuleIOMK2Neo;
 import frc.robot.subsystems.drive.modules.SwerveModuleIOSim;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIONeo;
 import frc.robot.subsystems.vision.Camera;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.NotSoPeriodic;
-import frc.robot.util.PoseEstimator;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -53,6 +56,7 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private Drive m_drive;
     private Camera m_camera;
+    private Elevator m_elevator;
 
     private AprilTagFieldLayout m_tagLayout;
     private AutoFactory m_autoFactory;
@@ -71,7 +75,13 @@ public class RobotContainer {
             m_tagLayout = new AprilTagFieldLayout(Constants.kAprilTagFieldLayoutFilename);
             setAprilTagAlliance(DriverStation.getAlliance());
 
-            ChangeNotifier.of(DriverStation::getAlliance).addListener(this::setAprilTagAlliance);
+            ChangeNotifier.of(DriverStation::getAlliance)
+                    .addListener(this::setAprilTagAlliance)
+                    .addListener(alliance -> {
+                        if (Robot.isSimulation()) {
+                            simulationInit();
+                        }
+                    });
 
             Logger.getInstance().recordOutput(
                     LoggingConstants.kAprilTagIds,
@@ -95,7 +105,10 @@ public class RobotContainer {
 
     private void configureSubsystems() {
         if (RobotBase.isSimulation()) {
-            m_camera = new Camera(new PhotonCamera(VisionConstants.kCameraName));
+            m_camera = new Camera(
+                    new PhotonCamera(VisionConstants.kCameraName),
+                    VisionConstants.kCameraToRobot.inverse());
+
             DriveChassis chassis = new CompetitionChassis(
                     new SwerveModuleIO[] {
                             new SwerveModuleIOSim(),
@@ -104,11 +117,13 @@ public class RobotContainer {
                             new SwerveModuleIOSim(),
                     },
                     new PigeonIO(ElectricalConstants.kGyroPort));
-            m_drive = new Drive(
-                    chassis,
-                    new PoseEstimator(chassis, m_camera, m_tagLayout));
+            m_drive = new Drive(chassis);
+            m_elevator = new Elevator(new ElevatorIONeo(0));
         } else {
-            m_camera = new Camera(new PhotonCamera(VisionConstants.kCameraName));
+            m_camera = new Camera(
+                    new PhotonCamera(VisionConstants.kCameraName),
+                    VisionConstants.kCameraToRobot.inverse());
+
             DriveChassis chassis = new CompetitionChassis(
                     new SwerveModuleIO[] {
                             new SwerveModuleIOMK2Neo(
@@ -129,10 +144,10 @@ public class RobotContainer {
                                     ElectricalConstants.kBackRightCANCoderPort),
                     },
                     new PigeonIO(ElectricalConstants.kGyroPort));
-            m_drive = new Drive(
-                    chassis,
-                    new PoseEstimator(chassis, m_camera, m_tagLayout));
+            m_drive = new Drive(chassis);
         }
+
+        RobotState.initialize(m_drive, m_camera, m_elevator, m_tagLayout);
     }
 
     /**
@@ -142,13 +157,26 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        DriverControls driverControls = new DriverXboxControls(0);
+        DriverControls controls = new DriverXboxControls(0);
         // DriverControls driverControls = new DriverJoystickControls(0, 1);
+
+        final DriveCommandConfig driveConfig = new DriveCommandConfig(
+                RobotState.getInstance()::getRobotPose,
+                m_drive::drive,
+                m_drive);
+
+        final BaseDriveCommand driveCommand = BaseDriveCommand
+                .builder(driveConfig)
+                .withSpeedSuppliers(
+                        () -> controls.getLeftInputY(),
+                        () -> controls.getLeftInputX(),
+                        () -> controls.getRightInputX())
+                .build();
 
         // OperatorControls operatorControls = new OperatorXboxControls(2);
 
         // Define subsystem default commands
-        m_drive.setDefaultCommand(m_drive.driveCommand(driverControls));
+        m_drive.setDefaultCommand(driveCommand);
 
         // Define Operator Control Mappings
         // operatorControls.getExampleControl().whenActive(new PrintCommand("Operator did a thing!"));
@@ -220,7 +248,7 @@ public class RobotContainer {
 
         Pose2d[] tagPoseList = m_tagLayout.getTags()
                 .stream()
-                .map(x -> x.pose.toPose2d())
+                .map(x -> m_tagLayout.getTagPose(x.ID).get().toPose2d())
                 .toArray(Pose2d[]::new);
 
         FieldUtil.getDefaultField().setObjectPoses("AprilTags", tagPoseList);
@@ -229,7 +257,7 @@ public class RobotContainer {
     public void simulationPeriodic() {
         REVPhysicsSim.getInstance().run();
         m_cameraNotSoPeriodic.call(() -> {
-            m_simVision.processFrame(m_drive.getPose());
+            m_simVision.processFrame(RobotState.getInstance().getRobotPose());
         });
     }
 

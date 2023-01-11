@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
 
 public class FaceTargetDrive extends TargetAngleDrive {
@@ -41,7 +42,7 @@ public class FaceTargetDrive extends TargetAngleDrive {
         double deltaY = chassisSpeeds.vyMetersPerSecond * 0.02 * kPredictiveMultiplier;
         double deltaTheta = chassisSpeeds.omegaRadiansPerSecond * 0.02 * kPredictiveMultiplier;
 
-        return m_drive.getPose().exp(new Twist2d(deltaX, deltaY, deltaTheta));
+        return RobotState.getInstance().getRobotPose().exp(new Twist2d(deltaX, deltaY, deltaTheta));
     }
 
 }

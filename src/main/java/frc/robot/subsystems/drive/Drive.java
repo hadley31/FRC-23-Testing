@@ -2,8 +2,6 @@ package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -12,22 +10,15 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.commands.drive.BaseDriveCommand;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.VisionConstants;
-import frc.robot.commands.drive.driver.JoystickDrive;
-import frc.robot.oi.DriverControls;
 import frc.robot.subsystems.drive.chassis.DriveChassis;
 import frc.robot.subsystems.drive.gyro.GyroInputsAutoLogged;
 import frc.robot.subsystems.drive.modules.SwerveModuleIO;
 import frc.robot.subsystems.drive.modules.SwerveModuleInputsAutoLogged;
-import frc.robot.util.FieldUtil;
-import frc.robot.util.PoseEstimator;
 
 public class Drive extends SubsystemBase {
 
     private final DriveChassis m_chassis;
-    private final PoseEstimator m_poseEstimator;
 
     private final SwerveModuleInputsAutoLogged[] m_moduleInputs = {
             new SwerveModuleInputsAutoLogged(),
@@ -38,9 +29,8 @@ public class Drive extends SubsystemBase {
 
     private final GyroInputsAutoLogged m_gyroInputs = new GyroInputsAutoLogged();
 
-    public Drive(DriveChassis chassis, PoseEstimator poseEstimator) {
+    public Drive(DriveChassis chassis) {
         m_chassis = chassis;
-        m_poseEstimator = poseEstimator;
     }
 
     @Override
@@ -58,18 +48,8 @@ public class Drive extends SubsystemBase {
             Logger.getInstance().processInputs(key, m_moduleInputs[i]);
         }
 
-        // Update Pose Estimation
-        updatePoseEstimation();
-
         // Log robot position and states
-        Logger.getInstance().recordOutput("Odometry", getPose());
         Logger.getInstance().recordOutput("ModuleStates", getModuleStates());
-
-        // Log camera position
-        var cameraPose = getPose3d().transformBy(VisionConstants.kCameraToRobot.inverse());
-        Logger.getInstance().recordOutput("CameraPose", cameraPose);
-
-        FieldUtil.getDefaultField().setSwerveRobotPose(getPose(), getChassis());
     }
 
     public DriveChassis getChassis() {
@@ -127,27 +107,8 @@ public class Drive extends SubsystemBase {
         getChassis().setDriveBrakeMode(brake);
     }
 
-    public Pose2d getPose() {
-        return m_poseEstimator.getEstimatedPose();
-    }
-
-    public Pose3d getPose3d() {
-        return new Pose3d(getPose());
-    }
-
     public Rotation2d getHeading() {
         return getChassis().getGyroAngle();
-    }
-
-    public void resetPose(Pose2d pose) {
-        Rotation2d offset = pose.getRotation();
-
-        getChassis().getGyro().reset(offset);
-        m_poseEstimator.resetPose(pose, offset, getModulePositions());
-    }
-
-    private void updatePoseEstimation() {
-        m_poseEstimator.update(getHeading(), getModuleStates(), getModulePositions());
     }
 
     //#region Sim Stuff
@@ -169,20 +130,8 @@ public class Drive extends SubsystemBase {
 
     //#region Commands
 
-    public BaseDriveCommand driveCommand(DriverControls controls) {
-        return new JoystickDrive(
-                this,
-                () -> controls.getLeftInputY(),
-                () -> controls.getLeftInputX(),
-                () -> controls.getRightInputX());
-    }
-
     public CommandBase brakeCommand() {
         return runOnce(this::brake);
-    }
-
-    public CommandBase resetPoseCommand(Pose2d pose) {
-        return runOnce(() -> resetPose(pose));
     }
 
     public CommandBase setBrakeModeCommand(boolean driveEnabled, boolean turnEnabled) {

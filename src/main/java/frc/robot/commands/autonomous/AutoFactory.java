@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Camera;
 
@@ -37,11 +38,10 @@ public class AutoFactory {
 
         // Define PathPlanner Event Map
         m_eventMap = new HashMap<String, Command>(Map.of(
-                "a", Commands.print("a"), // First Shoot Location
-                "b", Commands.print("b"), // Second Shoot Location
-                "c", Commands.print("c"), // Loading Cargo
-                "d", Commands.print("d") // Third Shoot Location
-        ));
+                "a", Commands.print("a"),
+                "b", Commands.print("b"),
+                "c", Commands.print("c"),
+                "d", Commands.print("d")));
     }
 
     public void loadAutoPathByName(String name) {
@@ -80,8 +80,8 @@ public class AutoFactory {
 
         // Create Auto builder
         BaseAutoBuilder autoBuilder = new SwerveAutoBuilder(
-                m_drive::getPose,
-                m_drive::resetPose,
+                RobotState.getInstance()::getRobotPose,
+                RobotState.getInstance()::resetRobotPose,
                 m_drive.getChassis().getKinematics(),
                 linearPIDConstants, angularPIDConstants,
                 m_drive::setModuleStates,

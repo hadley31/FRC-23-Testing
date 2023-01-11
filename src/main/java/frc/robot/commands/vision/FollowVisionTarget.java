@@ -5,6 +5,7 @@ import java.util.Optional;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.RobotState;
 import frc.robot.commands.drive.FollowTarget;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Camera;
@@ -44,7 +45,7 @@ public class FollowVisionTarget extends FollowTarget {
 
         var bestOffset = latestResult.getBestTarget().getBestCameraToTarget();
 
-        var targetPose = m_drive.getPose3d()
+        var targetPose = RobotState.getInstance().getRobotPose3d()
                 .transformBy(VisionConstants.kCameraToRobot.inverse()) // to camera's pose
                 .transformBy(bestOffset); // to target's pose
 

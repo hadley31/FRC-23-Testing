@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
 
 public abstract class FollowTarget extends CommandBase {
@@ -43,7 +44,7 @@ public abstract class FollowTarget extends CommandBase {
 
         Pose2d desiredPose = targetPose.get().transformBy(m_desiredOffset);
 
-        var twist = m_drive.getPose().log(desiredPose);
+        var twist = RobotState.getInstance().getRobotPose().log(desiredPose);
 
         twist.dx = MathUtil.applyDeadband(twist.dx, 0.2, DriveConstants.kAutoMaxSpeedMetersPerSecond);
         twist.dy = MathUtil.applyDeadband(twist.dy, 0.6, DriveConstants.kAutoMaxSpeedMetersPerSecond);

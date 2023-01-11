@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.vision.photonvision.PhotonCamera;
@@ -10,11 +11,13 @@ import frc.robot.Constants.VisionConstants;
 
 public class Camera extends SubsystemBase {
 
-    private PhotonCamera m_camera;
+    private final PhotonCamera m_camera;
+    private final Transform3d m_robotToCamera;
     private PhotonPipelineResult m_latestResult;
 
-    public Camera(PhotonCamera camera) {
+    public Camera(PhotonCamera camera, Transform3d robotToCamera) {
         m_camera = camera;
+        m_robotToCamera = robotToCamera;
     }
 
     @Override
@@ -58,6 +61,14 @@ public class Camera extends SubsystemBase {
 
     public PhotonCamera getPhotonCamera() {
         return m_camera;
+    }
+
+    public Transform3d getRobotToCamera() {
+        return m_robotToCamera;
+    }
+
+    public Transform3d getCameraToRobot() {
+        return m_robotToCamera.inverse();
     }
 
     //#region Commands
