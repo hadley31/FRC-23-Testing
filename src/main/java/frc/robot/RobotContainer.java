@@ -38,7 +38,7 @@ import frc.robot.subsystems.drive.chassis.CompetitionChassis;
 import frc.robot.subsystems.drive.chassis.DriveChassis;
 import frc.robot.subsystems.drive.gyro.PigeonIO;
 import frc.robot.subsystems.drive.modules.SwerveModuleIO;
-import frc.robot.subsystems.drive.modules.SwerveModuleIOMK2Neo;
+import frc.robot.subsystems.drive.modules.SwerveModuleIOMK4iNeo;
 import frc.robot.subsystems.drive.modules.SwerveModuleIOSim;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIONeo;
@@ -126,19 +126,19 @@ public class RobotContainer {
 
             DriveChassis chassis = new CompetitionChassis(
                     new SwerveModuleIO[] {
-                            new SwerveModuleIOMK2Neo(
+                            new SwerveModuleIOMK4iNeo(
                                     ElectricalConstants.kFrontLeftTurnMotorPort,
                                     ElectricalConstants.kFrontLeftDriveMotorPort,
                                     ElectricalConstants.kFrontLeftCANCoderPort),
-                            new SwerveModuleIOMK2Neo(
+                            new SwerveModuleIOMK4iNeo(
                                     ElectricalConstants.kFrontRightTurnMotorPort,
                                     ElectricalConstants.kFrontRightDriveMotorPort,
                                     ElectricalConstants.kFrontRightCANCoderPort),
-                            new SwerveModuleIOMK2Neo(
+                            new SwerveModuleIOMK4iNeo(
                                     ElectricalConstants.kBackLeftTurnMotorPort,
                                     ElectricalConstants.kBackLeftDriveMotorPort,
                                     ElectricalConstants.kBackLeftCANCoderPort),
-                            new SwerveModuleIOMK2Neo(
+                            new SwerveModuleIOMK4iNeo(
                                     ElectricalConstants.kBackRightTurnMotorPort,
                                     ElectricalConstants.kBackRightDriveMotorPort,
                                     ElectricalConstants.kBackRightCANCoderPort),
@@ -167,6 +167,7 @@ public class RobotContainer {
 
         final BaseDriveCommand driveCommand = BaseDriveCommand
                 .builder(driveConfig)
+                .withFieldOriented(false)
                 .withSpeedSuppliers(
                         () -> controls.getLeftInputY(),
                         () -> controls.getLeftInputX(),

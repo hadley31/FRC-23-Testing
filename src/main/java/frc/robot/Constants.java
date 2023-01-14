@@ -46,27 +46,27 @@ public final class Constants {
 
     public static final class ElectricalConstants {
         // Front Left Swerve Module Channels
-        public static final int kFrontLeftTurnMotorPort = 23;
-        public static final int kFrontLeftDriveMotorPort = 2;
-        public static final int kFrontLeftCANCoderPort = 1;
+        public static final int kFrontLeftTurnMotorPort = 16;
+        public static final int kFrontLeftDriveMotorPort = 1;
+        public static final int kFrontLeftCANCoderPort = 7;
 
         // Front Right Swerve Module Channels
-        public static final int kFrontRightTurnMotorPort = 38;
-        public static final int kFrontRightDriveMotorPort = 39;
-        public static final int kFrontRightCANCoderPort = 3;
+        public static final int kFrontRightTurnMotorPort = 2;
+        public static final int kFrontRightDriveMotorPort = 23;
+        public static final int kFrontRightCANCoderPort = 1;
 
         // Back Left Swerve Module Channels
-        public static final int kBackLeftTurnMotorPort = 1;
-        public static final int kBackLeftDriveMotorPort = 16;
-        public static final int kBackLeftCANCoderPort = 0;
+        public static final int kBackLeftTurnMotorPort = 32;
+        public static final int kBackLeftDriveMotorPort = 3;
+        public static final int kBackLeftCANCoderPort = 2;
 
         // Back Right Swerve Module Channels
-        public static final int kBackRightTurnMotorPort = 32;
-        public static final int kBackRightDriveMotorPort = 3;
-        public static final int kBackRightCANCoderPort = 2;
+        public static final int kBackRightTurnMotorPort = 39;
+        public static final int kBackRightDriveMotorPort = 38;
+        public static final int kBackRightCANCoderPort = 3;
 
         // Gyro Channel
-        public static final int kGyroPort = 0;
+        public static final int kGyroPort = 22;
     }
 
     public static final class DriveConstants {
@@ -78,8 +78,8 @@ public final class Constants {
         public static final double kWheelDiameter = Units.inchesToMeters(3.7);
 
         // Gear Ratios
-        public static final double kDriveGearRatio = 8.33;
-        public static final double kTurnGearRatio = 18.0;
+        public static final double kDriveGearRatio = 8.14;
+        public static final double kTurnGearRatio = 21.4285714286;
 
         // Encoder Conversion Factors
         public static final double kDrivePositionConversionFactor = Math.PI * kWheelDiameter / kDriveGearRatio;
