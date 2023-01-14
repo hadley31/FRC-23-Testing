@@ -80,10 +80,16 @@ public class RobotState {
     }
 
     private void log() {
+        // Log robot position
         Logger.getInstance().recordOutput("Odometry", getRobotPose());
+
         // Log camera position
         var cameraPose = getRobotPose3d().transformBy(VisionConstants.kCameraToRobot.inverse());
         Logger.getInstance().recordOutput("CameraPose", cameraPose);
+
+        // Log robot 3d orientation
+        Logger.getInstance().recordOutput("RobotOrientation",
+                new Pose3d(6, 4, 1, m_drive.getChassis().getGyro().getOrientation()));
 
         FieldUtil.getDefaultField().setSwerveRobotPose(getRobotPose(), m_drive.getChassis());
     }
