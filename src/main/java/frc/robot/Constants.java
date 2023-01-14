@@ -80,8 +80,8 @@ public final class Constants {
         public static final double kWheelDiameter = Units.inchesToMeters(3.7);
 
         // Gear Ratios
-        public static final double kDriveGearRatio = 8.33;
-        public static final double kTurnGearRatio = 18.0;
+        public static final double kDriveGearRatio = 8.14;
+        public static final double kTurnGearRatio = 21.4285714286;
 
         // Encoder Conversion Factors
         public static final double kDrivePositionConversionFactor = Math.PI * kWheelDiameter / kDriveGearRatio;
