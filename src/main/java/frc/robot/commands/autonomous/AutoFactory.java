@@ -82,10 +82,10 @@ public class AutoFactory {
         BaseAutoBuilder autoBuilder = new SwerveAutoBuilder(
                 RobotState.getInstance()::getRobotPose,
                 RobotState.getInstance()::resetRobotPose,
-                m_drive.getChassis().getKinematics(),
                 linearPIDConstants, angularPIDConstants,
-                m_drive::setModuleStates,
+                m_drive::drive,
                 m_eventMap,
+                true,
                 m_drive);
 
         return autoBuilder.fullAuto(m_paths).andThen(m_drive.brakeCommand());

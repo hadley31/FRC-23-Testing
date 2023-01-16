@@ -12,6 +12,7 @@ import com.revrobotics.REVPhysicsSim;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
@@ -75,7 +76,7 @@ public class RobotContainer {
 
     private void configureAprilTags() {
         try {
-            m_tagLayout = new AprilTagFieldLayout(Constants.kAprilTagFieldLayoutFilename);
+            m_tagLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
             setAprilTagAlliance(DriverStation.getAlliance());
 
             ChangeNotifier.of(DriverStation::getAlliance)
