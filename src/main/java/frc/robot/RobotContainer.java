@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.commands.generic_drive.BaseDriveCommand;
 import frc.lib.commands.generic_drive.DriveCommandConfig;
 import frc.lib.listeners.ChangeNotifier;
@@ -33,6 +34,8 @@ import frc.robot.commands.autonomous.AutoFactory;
 import frc.robot.commands.debug.DebugCommands;
 import frc.robot.oi.DriverControls;
 import frc.robot.oi.DriverXboxControls;
+import frc.robot.oi.OperatorControls;
+import frc.robot.oi.OperatorXboxControls;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.chassis.CompetitionChassis;
 import frc.robot.subsystems.drive.chassis.DriveChassis;
@@ -157,7 +160,8 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        DriverControls controls = new DriverXboxControls(0);
+        // Define Driver Control Mappings
+        final DriverControls controls = new DriverXboxControls(0);
         // DriverControls driverControls = new DriverJoystickControls(0, 1);
 
         final DriveCommandConfig driveConfig = new DriveCommandConfig(
@@ -174,13 +178,12 @@ public class RobotContainer {
                         () -> controls.getRightInputX())
                 .build();
 
-        // OperatorControls operatorControls = new OperatorXboxControls(2);
-
         // Define subsystem default commands
         m_drive.setDefaultCommand(driveCommand);
 
         // Define Operator Control Mappings
-        // operatorControls.getExampleControl().whenActive(new PrintCommand("Operator did a thing!"));
+        OperatorControls operatorControls = new OperatorXboxControls(5);
+        operatorControls.getExampleControl().onTrue(Commands.print("Operator did a thing!"));
     }
 
     /**
@@ -192,17 +195,11 @@ public class RobotContainer {
         m_autoFactory = new AutoFactory(m_drive, m_camera);
         m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser");
 
-        System.out.println(AutoConstants.kAutoNames);
-
         // Configure Auto Chooser Options
         AutoConstants.kAutoNames.forEach(name -> m_autoChooser.addOption(name, name));
         m_autoChooser.addDefaultOption(AutoConstants.kDefaultAuto, AutoConstants.kDefaultAuto);
 
-        ChangeNotifier.of(m_autoChooser::get)
-                .addListener(x -> {
-                    System.out.println("Loading auto: " + x);
-                    m_autoFactory.loadAutoPathByName(x);
-                });
+        ChangeNotifier.of(m_autoChooser::get).addListener(m_autoFactory::loadAutoPathByName);
 
         // Load the default auto
         m_autoFactory.loadAutoPathByName(AutoConstants.kDefaultAuto);

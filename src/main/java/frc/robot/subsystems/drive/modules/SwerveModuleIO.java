@@ -27,24 +27,15 @@ public interface SwerveModuleIO extends LoggedIO<SwerveModuleInputs> {
         // public double[] turnTempCelcius = new double[] {};
     }
 
-    public default Rotation2d getRotation() {
-        return new Rotation2d();
-    }
+    public Rotation2d getRotation();
 
-    public default Rotation2d getAbsoluteRotation() {
-        return new Rotation2d();
-    }
+    public Rotation2d getAbsoluteRotation();
 
-    public default double getVelocityMetersPerSecond() {
-        return 0.0;
-    }
+    public double getVelocityMetersPerSecond();
 
-    public default double getDrivePositionMeters() {
-        return 0.0;
-    }
+    public double getDrivePositionMeters();
 
-    public default void zeroDriveEncoder() {
-    }
+    public void zeroDriveEncoder();
 
     public default SwerveModuleState getState() {
         return new SwerveModuleState(getVelocityMetersPerSecond(), getRotation());
@@ -62,14 +53,11 @@ public interface SwerveModuleIO extends LoggedIO<SwerveModuleInputs> {
         return new SwerveModulePosition(getDrivePositionMeters(), getAbsoluteRotation());
     }
 
-    public default void setDesiredState(SwerveModuleState state) {
-    }
+    public void setDesiredState(SwerveModuleState state);
 
-    public default void zeroTurnEncoder() {
-    }
+    public void zeroTurnEncoder();
 
-    public default void syncTurnEncoderWithAbsolute() {
-    }
+    public void syncTurnEncoderWithAbsolute();
 
     public default void setTurnPID(double p, double i, double d) {
     }
@@ -78,16 +66,10 @@ public interface SwerveModuleIO extends LoggedIO<SwerveModuleInputs> {
     }
 
     /**
-     * Set motors to zero
-     */
-    public default void brake() {
-    }
-
-    /**
      * Used primarily for moving the robot while disabled
      * @param coast
      */
-    public default void setTurnCoastMode(boolean coast) {
+    public default void setTurnBrakeMode(boolean coast) {
     }
 
     /**

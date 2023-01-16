@@ -2,6 +2,7 @@ package frc.lib.accelerometer;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 
 public class Pigeon2Accel implements Accelerometer {
@@ -22,22 +23,22 @@ public class Pigeon2Accel implements Accelerometer {
 
     @Override
     public void setRange(Range range) {
-
+        DriverStation.reportWarning("Cannot set range for Pigeon2 Accelerometer", false);
     }
 
     @Override
     public double getX() {
-        return getAcceldata(kX);
+        return getAccelData(kX);
     }
 
     @Override
     public double getY() {
-        return getAcceldata(kY);
+        return getAccelData(kY);
     }
 
     @Override
     public double getZ() {
-        return getAcceldata(kZ);
+        return getAccelData(kZ);
     }
 
     private short[] getRawAccelData() {
@@ -59,7 +60,7 @@ public class Pigeon2Accel implements Accelerometer {
         return data;
     }
 
-    private double getAcceldata(int axis) {
+    private double getAccelData(int axis) {
         return convertToActual(getRawAccelData(axis));
     }
 
@@ -69,9 +70,5 @@ public class Pigeon2Accel implements Accelerometer {
 
     private static double fixedToDouble(short fixed, int shift) {
         return ((double) fixed) / (1 << shift);
-    }
-
-    public static void main(String... args) {
-        System.out.println(convertToActual((short) Short.MAX_VALUE));
     }
 }

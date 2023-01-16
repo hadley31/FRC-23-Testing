@@ -136,8 +136,8 @@ public class SwerveModuleIOMK2Neo implements SwerveModuleIO {
     }
 
     @Override
-    public void setTurnCoastMode(boolean coast) {
-        m_turnMotor.setIdleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
+    public void setTurnBrakeMode(boolean brake) {
+        m_turnMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class ChargeStationBalance extends CommandBase {
     @Override
     public void initialize() {
         m_drive.setDriveBrakeMode(true);
-        m_drive.setTurnCoastMode(false);
+        m_drive.setTurnBrakeMode(true);
     }
 
     @Override

@@ -52,9 +52,9 @@ public interface DriveChassis {
         return getGyro().getRotation2d();
     }
 
-    public default void setTurnCoastMode(boolean coast) {
+    public default void setTurnBrakeMode(boolean brake) {
         for (SwerveModuleIO module : getModules()) {
-            module.setTurnCoastMode(coast);
+            module.setTurnBrakeMode(brake);
         }
     }
 

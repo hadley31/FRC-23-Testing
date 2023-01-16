@@ -20,6 +20,16 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
         m_currentPosition = new SwerveModulePosition();
     }
 
+    /**
+     * This overload exists only for compatibility with other IO classes, and for "hot swaps"
+     * @param turnPort
+     * @param drivePort
+     * @param cancoderPort
+     */
+    public SwerveModuleIOSim(int turnPort, int drivePort, int cancoderPort) {
+        this();
+    }
+
     @Override
     public void updateInputs(SwerveModuleInputs inputs) {
         // Update internal state
@@ -46,13 +56,23 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
     }
 
     @Override
-    public SwerveModuleState getState() {
-        return m_currentState;
+    public Rotation2d getRotation() {
+        return m_currentState.angle;
     }
 
     @Override
-    public SwerveModulePosition getPosition() {
-        return m_currentPosition;
+    public Rotation2d getAbsoluteRotation() {
+        return m_currentState.angle;
+    }
+
+    @Override
+    public double getVelocityMetersPerSecond() {
+        return m_currentState.speedMetersPerSecond;
+    }
+
+    @Override
+    public double getDrivePositionMeters() {
+        return m_currentPosition.distanceMeters;
     }
 
     @Override
@@ -60,5 +80,23 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
         var optimized = SwerveModuleState.optimize(desiredState, m_currentState.angle);
 
         m_desiredState = optimized;
+    }
+
+    @Override
+    public void zeroDriveEncoder() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void zeroTurnEncoder() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void syncTurnEncoderWithAbsolute() {
+        // TODO Auto-generated method stub
+
     }
 }

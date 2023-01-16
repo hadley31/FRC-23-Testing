@@ -99,8 +99,8 @@ public class Drive extends SubsystemBase {
         }
     }
 
-    public void setTurnCoastMode(boolean coast) {
-        getChassis().setTurnCoastMode(coast);
+    public void setTurnBrakeMode(boolean brake) {
+        getChassis().setTurnBrakeMode(brake);
     }
 
     public void setDriveBrakeMode(boolean brake) {
@@ -134,10 +134,18 @@ public class Drive extends SubsystemBase {
         return runOnce(this::brake);
     }
 
+    public CommandBase hardBrakeCommand() {
+        return runOnce(() -> {
+            this.setTurnBrakeMode(true);
+            this.setDriveBrakeMode(true);
+            this.brake();
+        });
+    }
+
     public CommandBase setBrakeModeCommand(boolean driveEnabled, boolean turnEnabled) {
         return runOnce(() -> {
             setDriveBrakeMode(driveEnabled);
-            setTurnCoastMode(!turnEnabled);
+            setTurnBrakeMode(turnEnabled);
         });
     }
 

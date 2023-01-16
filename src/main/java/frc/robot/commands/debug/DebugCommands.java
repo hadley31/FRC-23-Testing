@@ -20,7 +20,8 @@ public class DebugCommands {
                 new WaitCommand(1.0),
 
                 // Enable coast mode to easily move robot
-                drive.setBrakeModeCommand(false)).ignoringDisable(true);
+                drive.setBrakeModeCommand(false))
+                .ignoringDisable(true);
     }
 
     public static CommandBase putSmartDashboardValue(String key, String value) {
