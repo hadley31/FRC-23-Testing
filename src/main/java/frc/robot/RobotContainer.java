@@ -8,8 +8,14 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.commands.drive.BaseDriveCommand;
@@ -27,6 +33,9 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.gyro.PigeonIO;
 import frc.robot.subsystems.drive.module.SwerveModuleIOMK4iNeo;
 import frc.robot.subsystems.drive.module.SwerveModuleIOSim;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIONeo;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -38,6 +47,9 @@ import frc.robot.subsystems.drive.module.SwerveModuleIOSim;
 public class RobotContainer {
   // Subsystems
   private Drive m_drive;
+  private Elevator m_elevator;
+
+  private Mechanism2d m_mechanism;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser");
@@ -51,6 +63,16 @@ public class RobotContainer {
   }
 
   private void configureSubsystems() {
+    m_mechanism = new Mechanism2d(70, 70);
+
+    var root = m_mechanism.getRoot("robot", 5, 5);
+    var elevatorLigament = root.append(new MechanismLigament2d("elevator", 0, Elevator.kElevatorAngle.getDegrees()));
+    var staticArmLigament = elevatorLigament
+        .append(new MechanismLigament2d("staticArm", 16, -Elevator.kElevatorAngle.getDegrees(), 10,
+            new Color8Bit(Color.kBlue)));
+    var wristLigament = staticArmLigament
+        .append(new MechanismLigament2d("wrist", 4, 0, 10, new Color8Bit(Color.kAliceBlue)));
+
     if (Robot.isReal()) {
       m_drive = new Drive(
           new PigeonIO(ElectricalConstants.kGyroPort),
@@ -70,6 +92,9 @@ public class RobotContainer {
               ElectricalConstants.kBackRightTurnMotorPort,
               ElectricalConstants.kBackRightDriveMotorPort,
               ElectricalConstants.kBackRightCANCoderPort));
+      m_elevator = new Elevator(new ElevatorIONeo(
+          ElectricalConstants.kElevatorLeaderPort,
+          ElectricalConstants.kElevatorFollowerPort), elevatorLigament);
     } else {
       m_drive = new Drive(
           new PigeonIO(ElectricalConstants.kGyroPort),
@@ -77,7 +102,10 @@ public class RobotContainer {
           new SwerveModuleIOSim(),
           new SwerveModuleIOSim(),
           new SwerveModuleIOSim());
+      m_elevator = new Elevator(new ElevatorIOSim(), elevatorLigament);
     }
+
+    SmartDashboard.putData("Robot Mechanism", m_mechanism);
   }
 
   /**
@@ -115,6 +143,11 @@ public class RobotContainer {
 
     operatorControls.getExampleOperatorButton().onTrue(Commands.print("Operator pressed a button!"));
     operatorControls.zeroTurnAbsoluteEncoders().onTrue(DebugCommands.zeroTurnAbsoluteEncoders(m_drive));
+
+    // Elevator Buttons
+    operatorControls.setElevatorPositionHigh().onTrue(m_elevator.fullExtendCommand());
+    operatorControls.setElevatorPositionMid().onTrue(m_elevator.setPositionCommand(Units.feetToMeters(3)));
+    operatorControls.setElevatorPositionLow().onTrue(m_elevator.fullRetractCommand());
   }
 
   /**
