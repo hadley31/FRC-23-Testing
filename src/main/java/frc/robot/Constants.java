@@ -24,6 +24,7 @@ import frc.lib.utils.GeometryUtil;
  */
 public final class Constants {
   public static final boolean kDebugMode = true;
+  public static final double loopPeriodSecs = 0.02;
 
   public static final class FieldConstants {
     public static final double kFieldLengthMeters = Units.feetToMeters(54.27083);
@@ -59,7 +60,9 @@ public final class Constants {
 
     // Encoder Conversion Factors
     public static final double kDrivePositionConversionFactor = Math.PI * kWheelDiameter / kDriveGearRatio;
+    public static final double kDriveVelocityConversionFactor = kDrivePositionConversionFactor / 60;
     public static final double kTurnPositionConversionFactor = 2 * Math.PI / kTurnGearRatio;
+    public static final double kTurnVelocityConversionFactor = 2 * kTurnPositionConversionFactor / 60;
 
     // PID Values
     public static final double kDriveP = 0.1;

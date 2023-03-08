@@ -2,15 +2,11 @@ package frc.robot.subsystems.drive.module;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.advantagekit.LoggedIO;
 import frc.robot.subsystems.drive.module.SwerveModuleIO.SwerveModuleInputs;
 
 public interface SwerveModuleIO extends LoggedIO<SwerveModuleInputs> {
-
   @AutoLog
   public static class SwerveModuleInputs {
     public double drivePositionMeters = 0.0;
@@ -27,14 +23,6 @@ public interface SwerveModuleIO extends LoggedIO<SwerveModuleInputs> {
     public double turnTempCelcius = 0.0;
   }
 
-  public Rotation2d getRotation();
-
-  public Rotation2d getAbsoluteRotation();
-
-  public double getVelocityMetersPerSecond();
-
-  public double getDrivePositionMeters();
-
   public void zeroTurnEncoder();
 
   public void zeroDriveEncoder();
@@ -45,41 +33,11 @@ public interface SwerveModuleIO extends LoggedIO<SwerveModuleInputs> {
 
   public void syncTurnEncoderWithAbsolute();
 
-  public default SwerveModuleState getState() {
-    return new SwerveModuleState(getVelocityMetersPerSecond(), getRotation());
-  }
+  public void setTurnVoltage(double voltage);
 
-  public default SwerveModuleState getAbsoluteState() {
-    return new SwerveModuleState(getVelocityMetersPerSecond(), getAbsoluteRotation());
-  }
+  public void setDriveVoltage(double voltage);
 
-  public default SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(getDrivePositionMeters(), getRotation());
-  }
+  public void setTurnBrakeMode(boolean coast);
 
-  public default SwerveModulePosition getAbsolutePosition() {
-    return new SwerveModulePosition(getDrivePositionMeters(), getAbsoluteRotation());
-  }
-
-  public void setDesiredState(SwerveModuleState state);
-
-  public default void setTurnPID(double p, double i, double d) {
-  }
-
-  public default void setDrivePID(double p, double i, double d) {
-  }
-
-  /**
-   * Used primarily for moving the robot while disabled
-   * @param coast
-   */
-  public default void setTurnBrakeMode(boolean coast) {
-  }
-
-  /**
-   * Used during autonomous path following or to quickly stop the robot
-   * @param brake Whether brake mode should be enabled
-   */
-  public default void setDriveBrakeMode(boolean brake) {
-  }
+  public void setDriveBrakeMode(boolean brake);
 }

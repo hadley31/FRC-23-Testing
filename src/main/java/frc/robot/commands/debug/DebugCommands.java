@@ -31,8 +31,8 @@ public class DebugCommands {
     return Commands.runOnce(() -> {
       System.out.println("Zeroing turn absolute encoders");
       for (var module : drive.getModules()) {
-        module.zeroTurnAbsoluteEncoder();
-        module.syncTurnEncoderWithAbsolute();
+        module.getIO().zeroTurnAbsoluteEncoder();
+        module.getIO().syncTurnEncoderWithAbsolute();
       }
     }, drive);
   }

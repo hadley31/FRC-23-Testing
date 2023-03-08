@@ -25,13 +25,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.accelerometer.Pigeon2Accelerometer;
 import frc.lib.commands.drive.BaseDriveCommand;
 import frc.lib.commands.drive.DriveCommandConfig;
 import frc.lib.pathplanner.PathPlannerUtil;
@@ -47,8 +43,6 @@ import frc.robot.oi.DriverControls;
 import frc.robot.oi.OperatorControls;
 import frc.robot.oi.SingleUserXboxControls;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.accelerometer.AccelerometerIOSim;
-import frc.robot.subsystems.drive.accelerometer.AccelerometerIOWPI;
 import frc.robot.subsystems.drive.gyro.PigeonIO;
 import frc.robot.subsystems.drive.module.SwerveModuleIOMK2Neo;
 import frc.robot.subsystems.drive.module.SwerveModuleIOSim;
@@ -138,24 +132,12 @@ public class RobotContainer {
   }
 
   private void configureSubsystems() {
-    m_mechanism = new Mechanism2d(70, 70);
-
-    var root = m_mechanism.getRoot("robot", 5, 5);
-    var elevatorLigament = root.append(new MechanismLigament2d("elevator", 0, Elevator.kElevatorAngle.getDegrees()));
-    var staticArmLigament = elevatorLigament
-        .append(new MechanismLigament2d("staticArm", 16, -Elevator.kElevatorAngle.getDegrees(), 10,
-            new Color8Bit(Color.kBlue)));
-    var wristLigament = staticArmLigament
-        .append(new MechanismLigament2d("wrist", 4, 0, 10, new Color8Bit(Color.kAliceBlue)));
-
     WPI_Pigeon2 pigeon = new WPI_Pigeon2(ElectricalConstants.kGyroPort);
 
     if (Robot.isReal()) {
       pigeon.configMountPose(AxisDirection.NegativeX, AxisDirection.PositiveZ);
       m_drive = new Drive(
-          // new GyroIOWPIWrapper(new ADXRS450_Gyro()),
           new PigeonIO(pigeon),
-          new AccelerometerIOWPI(new Pigeon2Accelerometer(pigeon)),
           new SwerveModuleIOMK2Neo(
               ElectricalConstants.kFrontLeftTurnMotorPort,
               ElectricalConstants.kFrontLeftDriveMotorPort,
@@ -176,19 +158,15 @@ public class RobotContainer {
               ElectricalConstants.kBackRightDriveMotorPort,
               ElectricalConstants.kBackRightCANCoderPort,
               Rotation2d.fromRadians(0.993)));
-      m_elevator = new Elevator(new ElevatorIOSim(), elevatorLigament);
-      // m_elevator = new Elevator(new ElevatorIONeo(
-      //     ElectricalConstants.kElevatorLeaderPort,
-      //     ElectricalConstants.kElevatorFollowerPort), elevatorLigament);
+      m_elevator = new Elevator(new ElevatorIOSim());
     } else {
       m_drive = new Drive(
           new PigeonIO(pigeon),
-          new AccelerometerIOSim(),
           new SwerveModuleIOSim(),
           new SwerveModuleIOSim(),
           new SwerveModuleIOSim(),
           new SwerveModuleIOSim());
-      m_elevator = new Elevator(new ElevatorIOSim(), elevatorLigament);
+      m_elevator = new Elevator(new ElevatorIOSim());
     }
 
     SmartDashboard.putData("Robot Mechanism", m_mechanism);

@@ -1,15 +1,12 @@
 package frc.robot.subsystems.drive.module;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import frc.robot.Constants.DriveConstants;
 
@@ -23,9 +20,6 @@ public class SwerveModuleIOMK2Neo implements SwerveModuleIO {
   private final Rotation2d m_absoluteOffset;
 
   private final AnalogEncoder m_turnAbsoluteEncoder;
-
-  private final SparkMaxPIDController m_drivePIDController;
-  private final SparkMaxPIDController m_turnPIDController;
 
   public SwerveModuleIOMK2Neo(int turnMotorPort, int driveMotorPort, int turnAbsoluteEncoderPort, Rotation2d offset) {
     // Define Motors
@@ -53,21 +47,10 @@ public class SwerveModuleIOMK2Neo implements SwerveModuleIO {
 
     // Define Encoder Conversion Factors
     m_turnMotorEncoder.setPositionConversionFactor(DriveConstants.kTurnPositionConversionFactor); // radians
-    m_turnMotorEncoder.setVelocityConversionFactor(DriveConstants.kTurnPositionConversionFactor / 60); // radians per second
+    m_turnMotorEncoder.setVelocityConversionFactor(DriveConstants.kTurnVelocityConversionFactor); // radians per second
 
     m_driveMotorEncoder.setPositionConversionFactor(DriveConstants.kDrivePositionConversionFactor); // meters
-    m_driveMotorEncoder.setVelocityConversionFactor(DriveConstants.kDrivePositionConversionFactor / 60); // meters per second
-
-    // Define PID Controllers
-    m_turnPIDController = m_turnMotor.getPIDController();
-    m_drivePIDController = m_driveMotor.getPIDController();
-
-    m_turnPIDController.setPositionPIDWrappingEnabled(true);
-    m_turnPIDController.setPositionPIDWrappingMinInput(-Math.PI);
-    m_turnPIDController.setPositionPIDWrappingMaxInput(Math.PI);
-
-    setTurnPID(DriveConstants.kTurnP, DriveConstants.kTurnI, DriveConstants.kTurnD);
-    setDrivePID(DriveConstants.kDriveP, DriveConstants.kDriveI, DriveConstants.kDriveD);
+    m_driveMotorEncoder.setVelocityConversionFactor(DriveConstants.kDriveVelocityConversionFactor); // meters per second
   }
 
   @Override
@@ -86,36 +69,21 @@ public class SwerveModuleIOMK2Neo implements SwerveModuleIO {
     inputs.turnTempCelcius = m_turnMotor.getMotorTemperature();
   }
 
-  @Override
-  public double getVelocityMetersPerSecond() {
+  private double getVelocityMetersPerSecond() {
     return m_driveMotorEncoder.getVelocity();
   }
 
-  @Override
-  public Rotation2d getRotation() {
+  private Rotation2d getRotation() {
     double angle = MathUtil.angleModulus(m_turnMotorEncoder.getPosition());
     return new Rotation2d(angle);
   }
 
-  @Override
-  public Rotation2d getAbsoluteRotation() {
+  private Rotation2d getAbsoluteRotation() {
     double angle = (1.0 - m_turnAbsoluteEncoder.getAbsolutePosition()) * 2 * Math.PI;
     return new Rotation2d(MathUtil.angleModulus(angle)).plus(m_absoluteOffset);
   }
 
-  @Override
-  public void setDesiredState(SwerveModuleState state) {
-    var optimized = SwerveModuleState.optimize(state, getRotation());
-    m_turnPIDController.setReference(optimized.angle.getRadians(), ControlType.kPosition);
-
-    // Set Drive Motor Setpoint
-    m_drivePIDController.setReference(optimized.speedMetersPerSecond, ControlType.kVelocity, 0,
-        DriveConstants.kDriveFF * optimized.speedMetersPerSecond);
-
-  }
-
-  @Override
-  public double getDrivePositionMeters() {
+  private double getDrivePositionMeters() {
     return m_driveMotorEncoder.getPosition();
   }
 
@@ -145,16 +113,14 @@ public class SwerveModuleIOMK2Neo implements SwerveModuleIO {
   }
 
   @Override
-  public void setTurnPID(double p, double i, double d) {
-    m_turnPIDController.setP(p);
-    m_turnPIDController.setI(i);
-    m_turnPIDController.setD(d);
+  public void setTurnVoltage(double voltage) {
+    voltage = MathUtil.clamp(voltage, -12, 12);
+    m_turnMotor.setVoltage(voltage);
   }
 
   @Override
-  public void setDrivePID(double p, double i, double d) {
-    m_drivePIDController.setP(p);
-    m_drivePIDController.setI(i);
-    m_drivePIDController.setD(d);
+  public void setDriveVoltage(double voltage) {
+    voltage = MathUtil.clamp(voltage, -12, 12);
+    m_driveMotor.setVoltage(voltage);
   }
 }

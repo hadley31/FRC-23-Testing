@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -20,28 +19,29 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.utils.FieldUtil;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.drive.accelerometer.AccelerometerIO;
-import frc.robot.subsystems.drive.accelerometer.AccelerometerInputsAutoLogged;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroInputsAutoLogged;
+import frc.robot.subsystems.drive.module.SwerveModule;
 import frc.robot.subsystems.drive.module.SwerveModuleIO;
 import frc.robot.subsystems.drive.module.SwerveModuleInputsAutoLogged;
 
 public class Drive extends SubsystemBase {
-  private final SwerveModuleIO[] m_modules;
+  private final SwerveModule[] m_modules;
   private final SwerveModuleInputsAutoLogged[] m_moduleInputs;
 
   private final GyroIO m_gyro;
   private final GyroInputsAutoLogged m_gyroInputs;
 
-  private final AccelerometerIO m_accel;
-  private final AccelerometerInputsAutoLogged m_accelInputs;
-
   private final SwerveDrivePoseEstimator m_poseEstimator;
 
   /** Creates a new Drive. */
-  public Drive(GyroIO gyro, AccelerometerIO accel, SwerveModuleIO... modules) {
-    m_modules = modules;
+  public Drive(GyroIO gyro, SwerveModuleIO... modules) {
+
+    m_modules = new SwerveModule[modules.length];
+    for (int i = 0; i < m_modules.length; i++) {
+      m_modules[i] = new SwerveModule(SwerveModule.kModuleNames[i], modules[i]);
+    }
+
     m_moduleInputs = new SwerveModuleInputsAutoLogged[modules.length];
     for (int i = 0; i < m_moduleInputs.length; i++) {
       m_moduleInputs[i] = new SwerveModuleInputsAutoLogged();
@@ -50,9 +50,9 @@ public class Drive extends SubsystemBase {
     m_gyro = gyro;
     m_gyroInputs = new GyroInputsAutoLogged();
 
-    for (SwerveModuleIO module : m_modules) {
-      module.zeroDriveEncoder();
-      module.syncTurnEncoderWithAbsolute();
+    for (SwerveModule module : m_modules) {
+      module.getIO().zeroDriveEncoder();
+      module.getIO().syncTurnEncoderWithAbsolute();
     }
 
     m_poseEstimator = new SwerveDrivePoseEstimator(
@@ -62,9 +62,6 @@ public class Drive extends SubsystemBase {
         new Pose2d(),
         VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5)),
         VecBuilder.fill(65, 65, Units.degreesToRadians(75)));
-
-    m_accel = accel;
-    m_accelInputs = new AccelerometerInputsAutoLogged();
   }
 
   @Override
@@ -73,18 +70,12 @@ public class Drive extends SubsystemBase {
     m_gyro.updateInputs(m_gyroInputs);
     Logger.getInstance().processInputs("Drive/Gyro", m_gyroInputs);
 
-    m_accel.updateInputs(m_accelInputs);
-    Logger.getInstance().processInputs("Drive/Accel", m_accelInputs);
-
     // Update Swerve Module Log Inputs
     for (int i = 0; i < m_modules.length; i++) {
-      m_modules[i].updateInputs(m_moduleInputs[i]);
-      Logger.getInstance().processInputs("Drive/Module" + i, m_moduleInputs[i]);
+      m_modules[i].update();
     }
 
     m_poseEstimator.update(getGyroHeading(), getModulePositions());
-
-    addAccel();
 
     Logger.getInstance().recordOutput("Odometry", getPose());
     Logger.getInstance().recordOutput("ModuleStates", getModuleStates());
@@ -92,19 +83,6 @@ public class Drive extends SubsystemBase {
         new Pose3d(new Translation3d(5, 5, 2), getGyro().getOrientation()));
     FieldUtil.getDefaultField().setSwerveRobotPose(getPose(), getModuleStates(),
         DriveConstants.kSwerveModuleTranslations);
-  }
-
-  private void addAccel() {
-    Twist2d twist = new Twist2d(m_accelInputs.accelX, m_accelInputs.accelY, 0);
-
-    Pose2d accelEstPose = getPoseEstimator().getEstimatedPosition().exp(twist);
-
-    Logger.getInstance().recordOutput("Drive/Accel/EstimatedPose", accelEstPose);
-
-    m_poseEstimator.addVisionMeasurement(
-        accelEstPose,
-        Timer.getFPGATimestamp(),
-        VecBuilder.fill(30, 30, Units.degreesToRadians(1000)));
   }
 
   public void fieldRelativeDrive(ChassisSpeeds speeds) {
@@ -171,20 +149,20 @@ public class Drive extends SubsystemBase {
   }
 
   public void brake() {
-    for (SwerveModuleIO module : m_modules) {
+    for (SwerveModule module : m_modules) {
       module.setDesiredState(new SwerveModuleState(0, module.getRotation()));
     }
   }
 
   public void setTurnBrakeMode(boolean brake) {
-    for (SwerveModuleIO module : m_modules) {
-      module.setTurnBrakeMode(brake);
+    for (SwerveModule module : m_modules) {
+      module.getIO().setTurnBrakeMode(brake);
     }
   }
 
   public void setDriveBrakeMode(boolean brake) {
-    for (SwerveModuleIO module : m_modules) {
-      module.setDriveBrakeMode(brake);
+    for (SwerveModule module : m_modules) {
+      module.getIO().setDriveBrakeMode(brake);
     }
   }
 
@@ -204,7 +182,7 @@ public class Drive extends SubsystemBase {
     return new Pose3d(getPose3d().getTranslation(), getGyro().getOrientation());
   }
 
-  public SwerveModuleIO[] getModules() {
+  public SwerveModule[] getModules() {
     return m_modules;
   }
 

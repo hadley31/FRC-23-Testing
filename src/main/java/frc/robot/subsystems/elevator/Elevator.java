@@ -8,9 +8,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.advantagekit.LoggedTunableNumber;
@@ -35,20 +32,14 @@ public class Elevator extends SubsystemBase {
 
   private final ElevatorIO m_io;
   private final ElevatorInputsAutoLogged m_inputs;
-  private final MechanismLigament2d m_ligament;
 
   private double m_setpointMeters;
   private final ProfiledPIDController m_controller;
   private ElevatorFeedforward m_feedforward;
 
-  public Elevator(ElevatorIO io, MechanismLigament2d ligament) {
+  public Elevator(ElevatorIO io) {
     m_io = io;
     m_inputs = new ElevatorInputsAutoLogged();
-
-    m_ligament = ligament;
-    m_ligament.setAngle(kElevatorAngle);
-    m_ligament.setColor(new Color8Bit(Color.kBeige));
-    m_ligament.setLineWeight(10);
 
     m_controller = new ProfiledPIDController(
         kP.get(), kI.get(), kD.get(),
@@ -71,8 +62,6 @@ public class Elevator extends SubsystemBase {
     }
 
     m_io.setVoltage(outputVoltage);
-
-    m_ligament.setLength(Units.metersToInches(getPositionMeters()));
 
     Logger.getInstance().recordOutput("Elevator/SetpointMeters", m_setpointMeters);
     Logger.getInstance().recordOutput("Elevator/PositionX", getPositionX());
