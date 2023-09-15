@@ -11,9 +11,6 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.SimVisionSystem;
 
-import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -23,6 +20,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,11 +41,10 @@ import frc.robot.oi.DriverControls;
 import frc.robot.oi.OperatorControls;
 import frc.robot.oi.SingleUserXboxControls;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.gyro.PigeonIO;
-import frc.robot.subsystems.drive.module.SwerveModuleIOMK2Neo;
+import frc.robot.subsystems.drive.gyro.GyroIONavX;
 import frc.robot.subsystems.drive.module.SwerveModuleIOSim;
+import frc.robot.subsystems.drive.module.SwerveModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.vision.AprilTagCamera;
 
 /**
@@ -132,41 +129,36 @@ public class RobotContainer {
   }
 
   private void configureSubsystems() {
-    WPI_Pigeon2 pigeon = new WPI_Pigeon2(ElectricalConstants.kGyroPort);
-
     if (Robot.isReal()) {
-      pigeon.configMountPose(AxisDirection.NegativeX, AxisDirection.PositiveZ);
       m_drive = new Drive(
-          new PigeonIO(pigeon),
-          new SwerveModuleIOMK2Neo(
+          new GyroIONavX(Port.kMXP),
+          new SwerveModuleIOTalonFX(
               ElectricalConstants.kFrontLeftTurnMotorPort,
               ElectricalConstants.kFrontLeftDriveMotorPort,
               ElectricalConstants.kFrontLeftCANCoderPort,
               Rotation2d.fromRadians(0.618)),
-          new SwerveModuleIOMK2Neo(
+          new SwerveModuleIOTalonFX(
               ElectricalConstants.kFrontRightTurnMotorPort,
               ElectricalConstants.kFrontRightDriveMotorPort,
               ElectricalConstants.kFrontRightCANCoderPort,
               Rotation2d.fromRadians(2.966)),
-          new SwerveModuleIOMK2Neo(
+          new SwerveModuleIOTalonFX(
               ElectricalConstants.kBackLeftTurnMotorPort,
               ElectricalConstants.kBackLeftDriveMotorPort,
               ElectricalConstants.kBackLeftCANCoderPort,
               Rotation2d.fromRadians(0.548)),
-          new SwerveModuleIOMK2Neo(
+          new SwerveModuleIOTalonFX(
               ElectricalConstants.kBackRightTurnMotorPort,
               ElectricalConstants.kBackRightDriveMotorPort,
               ElectricalConstants.kBackRightCANCoderPort,
               Rotation2d.fromRadians(0.993)));
-      m_elevator = new Elevator(new ElevatorIOSim());
     } else {
       m_drive = new Drive(
-          new PigeonIO(pigeon),
+          new GyroIONavX(Port.kMXP),
           new SwerveModuleIOSim(),
           new SwerveModuleIOSim(),
           new SwerveModuleIOSim(),
           new SwerveModuleIOSim());
-      m_elevator = new Elevator(new ElevatorIOSim());
     }
 
     SmartDashboard.putData("Robot Mechanism", m_mechanism);

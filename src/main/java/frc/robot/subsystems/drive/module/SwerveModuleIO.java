@@ -2,6 +2,7 @@ package frc.robot.subsystems.drive.module;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.advantagekit.LoggedIO;
 import frc.robot.subsystems.drive.module.SwerveModuleIO.SwerveModuleInputs;
@@ -33,11 +34,11 @@ public interface SwerveModuleIO extends LoggedIO<SwerveModuleInputs> {
 
   public void syncTurnEncoderWithAbsolute();
 
-  public void setTurnVoltage(double voltage);
+  public void setTargetTurnPosition(Rotation2d positionRadians);
 
-  public void setDriveVoltage(double voltage);
+  public void setTargetDriveVelocity(double velocityMetersPerSecond);
 
-  public void setTurnBrakeMode(boolean coast);
+  public void setTurnBrakeMode(boolean brake);
 
   public void setDriveBrakeMode(boolean brake);
 }

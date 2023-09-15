@@ -1,21 +1,19 @@
 package frc.robot.commands.autonomous;
 
-import java.util.List;
 import java.util.Map;
 
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.BaseAutoBuilder;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.pathplanner.lib.server.PathPlannerServer;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.EventManager;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PPLibTelemetry;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
-import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.vision.AprilTagCamera;
@@ -46,33 +44,23 @@ public class AutoFactory extends CommandBase {
         "elevatorHigh", m_elevator.setPositionCommand(Units.feetToMeters(5)),
         "charge", ChargeStationBalance.charge(drive));
 
-    if (Constants.kDebugMode) {
-      PathPlannerServer.startServer(5811);
+    if (!Constants.kDebugMode) {
+      PPLibTelemetry.enableCompetitionMode();
     }
+
+    var config = new HolonomicPathFollowerConfig(linearPIDConstants, angularPIDConstants,
+        DriveConstants.kMaxSpeedMetersPerSecond,
+        DriveConstants.kTrackWidth / 2);
+
+    AutoBuilder.configureHolonomic(drive::getPose, drive::resetPose, drive::getChassisSpeeds, drive::drive, config,
+        drive);
+
+    EventManager.registerCommands(m_eventMap);
+
+    AutoBuilder.buildAuto("test");
   }
 
-  public List<PathPlannerTrajectory> loadPathGroupByName(String name) {
-    return PathPlanner.loadPathGroup(
-        name,
-        AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelMetersPerSecondSq);
-  }
-
-  public CommandBase getAutoCommand(String name) {
-    return getAutoCommand(loadPathGroupByName(name));
-  }
-
-  private CommandBase getAutoCommand(List<PathPlannerTrajectory> paths) {
-    // Create Auto builder
-    BaseAutoBuilder autoBuilder = new SwerveAutoBuilder(
-        m_drive::getPose,
-        m_drive::resetPose,
-        linearPIDConstants, angularPIDConstants,
-        m_drive::drive,
-        m_eventMap,
-        true, // TODO: ENABLE (AND TEST) BEFORE COMP
-        m_drive);
-
-    return autoBuilder.fullAuto(paths).andThen(m_drive.hardBrakeCommand());
+  public Command getAutoCommand(String name) {
+    return AutoBuilder.buildAuto(name);
   }
 }

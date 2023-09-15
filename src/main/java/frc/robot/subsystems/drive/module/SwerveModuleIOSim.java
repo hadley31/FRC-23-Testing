@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drive.module;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
@@ -58,13 +59,13 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
   }
 
   @Override
-  public void setTurnVoltage(double volts) {
-    m_turnAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    m_turnSim.setInputVoltage(m_turnAppliedVolts);
+  public void setTargetTurnPosition(Rotation2d rotation2d) {
+    m_turnAppliedVolts = MathUtil.clamp(rotation2d.getRadians(), -12.0, 12.0);
+    m_turnSim.setInputVoltage(m_driveAppliedVolts);
   }
 
   @Override
-  public void setDriveVoltage(double volts) {
+  public void setTargetDriveVelocity(double volts) {
     m_driveAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
     m_driveSim.setInputVoltage(m_driveAppliedVolts);
   }

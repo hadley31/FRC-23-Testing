@@ -1,12 +1,9 @@
 package frc.robot.subsystems.vision;
 
-import java.util.Optional;
-
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.VecBuilder;
@@ -17,10 +14,11 @@ import edu.wpi.first.math.util.Units;
 
 public class AprilTagCamera extends PhotonSubsystem {
   private final String m_cameraLogPath;
+
   private final PhotonPoseEstimator m_photonEstimator;
   private final AprilTagFieldLayout m_tagLayout;
   private final SwerveDrivePoseEstimator m_poseEstimator;
-  private PhotonPipelineResult m_latestResult;
+
   private Pose2d m_latestEstPose;
 
   public AprilTagCamera(String cameraName, Transform3d robotToCamera, AprilTagFieldLayout tagLayout,
@@ -33,9 +31,8 @@ public class AprilTagCamera extends PhotonSubsystem {
   }
 
   @Override
-  public void periodic() {
-    m_latestResult = getCamera().getLatestResult();
-    m_photonEstimator.update().ifPresent(result -> {
+  public void periodic(PhotonPipelineResult latestResult) {
+    m_photonEstimator.update(latestResult).ifPresent(result -> {
       m_latestEstPose = result.estimatedPose.toPose2d();
       double timestamp = result.timestampSeconds;
 
@@ -60,14 +57,6 @@ public class AprilTagCamera extends PhotonSubsystem {
           timestamp,
           VecBuilder.fill(stdDeviation, stdDeviation, Units.degreesToRadians(80)));
     });
-  }
-
-  public PhotonPipelineResult getLatestResult() {
-    return m_latestResult;
-  }
-
-  public Optional<PhotonTrackedTarget> getBestTarget() {
-    return Optional.ofNullable(getLatestResult().getBestTarget());
   }
 
   public Pose2d getLatestEstimatedPose() {
