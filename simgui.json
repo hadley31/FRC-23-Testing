@@ -1,0 +1,230 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "window": {
+        "visible": false
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/AdvantageKit/RealOutputs/Mechanism2d": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/Robot/Mechanism": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/RobotState/Elevator": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/SuperStructure/Mechanism": "Mechanism2d",
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[12]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[13]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[14]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[15]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[16]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[17]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[18]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[19]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[20]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[21]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[22]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[23]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[24]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[25]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[26]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[27]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[28]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[29]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[30]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[31]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[32]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[33]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[5]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[6]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
+      "/LiveWindow/Ungrouped/Pigeon 2 [22]": "Gyro",
+      "/LiveWindow/Ungrouped/Pigeon 2 [23]": "Gyro",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/SmartDashboard/AprilTagCamera Sim Field": "Field2d",
+      "/SmartDashboard/AprilTagCameraGray Sim Field": "Field2d",
+      "/SmartDashboard/AprilTagCameraGreen Sim Field": "Field2d",
+      "/SmartDashboard/Auto Choices": "String Chooser",
+      "/SmartDashboard/Auto Chooser": "String Chooser",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Robot Mechanism": "Mechanism2d",
+      "/SmartDashboard/limelight Sim Field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/Auto Chooser": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Field": {
+        "AprilTags": {
+          "arrows": false,
+          "image": "C:\\Users\\Public\\wpilib\\projects\\2023\\FRC-23\\images\\tag-green.png",
+          "length": 0.30000001192092896,
+          "selectable": false,
+          "width": 0.5
+        },
+        "Robot": {
+          "length": 0.7799999713897705,
+          "selectable": false,
+          "width": 0.7799999713897705
+        },
+        "RobotSwerveModules": {
+          "image": "C:\\Users\\Public\\wpilib\\projects\\2023\\FRC-23\\images\\swerve_module.png",
+          "length": 0.20000000298023224,
+          "width": 0.20000000298023224
+        },
+        "Test": {
+          "arrows": false,
+          "selectable": false,
+          "style": "Line"
+        },
+        "bottom": 544,
+        "height": 8.013679504394531,
+        "image": "C:\\Users\\Public\\wpilib\\projects\\2023\\FRC-23\\images/2023-field.png",
+        "left": 46,
+        "right": 1088,
+        "top": 36,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Robot Mechanism": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "retained": {
+      "SmartDashboard": {
+        "Auto Chooser": {
+          "open": true
+        }
+      }
+    },
+    "transitory": {
+      "AdvantageKit": {
+        "DashboardInputs": {
+          "Elevator": {
+            "open": true
+          },
+          "TunableNumbers": {
+            "Gyro": {
+              "open": true
+            },
+            "open": true
+          }
+        },
+        "RealOutputs": {
+          "Cameras": {
+            "AprilTagCamera": {
+              "open": true
+            }
+          },
+          "DriveCommand": {
+            "open": true
+          },
+          "Elevator": {
+            "open": true
+          },
+          "Gyro": {
+            "open": true
+          },
+          "Robot": {
+            "Mechanism": {
+              "open": true,
+              "robot": {
+                "elevator": {
+                  "open": true
+                },
+                "open": true
+              }
+            },
+            "open": true
+          },
+          "open": true
+        },
+        "Wrist": {
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "Elevator": {
+          "open": true
+        },
+        "TunableNumbers": {
+          "Elevator": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      }
+    }
+  },
+  "Plot": {
+    "Plot <0>": {
+      "plots": [
+        {
+          "height": 305,
+          "series": [
+            {
+              "color": [
+                0.11120724678039551,
+                0.4023086130619049,
+                0.8725489974021912,
+                1.0
+              ],
+              "id": "NT:/AdvantageKit/RealOutputs/Elevator/SetpointMeters"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/AdvantageKit/Elevator/PositionMeters"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "name": "Elevator"
+      }
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "height": 305,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/AdvantageKit/Wrist/AngleRad"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "name": "Wrist"
+      }
+    }
+  }
+}
